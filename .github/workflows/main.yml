@@ -1,0 +1,165 @@
+name: unit-lint-typecheck-e2e-ct
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install-dependencies:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install dependencies
+        uses: cypress-io/github-action@v6.4.0
+        with:
+          runTests: false
+
+  lint:
+    needs: install-dependencies
+    name: Run Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install dependencies
+        uses: cypress-io/github-action@v6.4.0
+        with:
+          runTests: false
+      - name: lint
+        run: npm run lint
+
+  typecheck:
+    needs: install-dependencies
+    name: Run typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install dependencies
+        uses: cypress-io/github-action@v6.4.0
+        with:
+          runTests: false
+      - name: typecheck
+        run: npm run typecheck
+
+  cypress-e2e-test:
+    #    if you want to enable parallelization
+    strategy:
+      fail-fast: false
+      matrix:
+        machines: [1]
+    needs: [install-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install Specific Chrome Version
+        run: |
+          sudo apt-get install -y wget
+          sudo wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt-get install ./google-chrome-stable_current_amd64.deb
+
+      - name: Cypress e2e tests 🧪
+        uses: cypress-io/github-action@v6.4.0
+        with:
+          start: npm run dev
+          wait-on: 'http://localhost:3000'
+          browser: chrome
+          # if you want to enable parallelization
+          record: true
+          parallel: true
+          group: e2e-tests
+          tag: e2e-tests
+        env:
+          # if you want to enable parallelization
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # # if you want to enable codecov
+      # - name: Upload artifacts (Coverage_step3)
+      #   uses: actions/upload-artifact@v3.1.2
+      #   with:
+      #     name: coverage-cy-e2e
+      #     path: coverage-cy/
+      #     retention-days: 1
+
+      # - name: ✅ Upload e2e coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     directory: coverage-cy/
+      #     flags: cypress-e2e-coverage
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+
+  cypress-ct-test:
+    # if you want to enable parallelization
+    strategy:
+      fail-fast: false
+      matrix:
+        machines: [1]
+    needs: [install-dependencies]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install Specific Chrome Version
+        run: |
+          sudo apt-get install -y wget
+          sudo wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt-get install ./google-chrome-stable_current_amd64.deb
+
+      - name: Cypress component tests 🧪
+        uses: cypress-io/github-action@v6.4.0
+        with:
+          component: true
+          browser: chrome
+          # if you want to enable parallelization
+          record: true
+          parallel: true
+          group: ct-tests
+          tag: ct-tests
+        env:
+          # if you want to enable parallelization
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # # if you want to enable codecov
+      # - name: Upload artifacts (Coverage_step3)
+      #   uses: actions/upload-artifact@v3.1.2
+      #   with:
+      #     name: coverage-cy-ct
+      #     path: coverage-cy/
+      #     retention-days: 1
+
+      # - name: ✅ Upload CT coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     directory: coverage-cy/
+      #     flags: cypress-ct-coverage
+      #     token: ${{ secrets.CODECOV_TOKEN }}
