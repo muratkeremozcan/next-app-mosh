@@ -1,4 +1,4 @@
-'use server'
+// 'use server' // Cannot find module 'react-server-dom-webpack/client' https://github.com/cypress-io/cypress/issues/27890
 type User = {
   id: number
   name: string
