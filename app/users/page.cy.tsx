@@ -1,18 +1,17 @@
 import UsersPage from './page'
+import users from '@fixtures/users.json'
 
-// TODO: find a way to stub window fetch in a component test for a nextJs server component
-describe.skip('<UsersPage />', () => {
-  it('should stub window fetch', () => {
-    cy.intercept(
-      {
-        method: 'GET',
-        url: 'https://jsonplaceholder.typicode.com/users',
-      },
-      {
-        fixture: 'users.json',
-      },
-    ).as('getUsers')
+describe('<UsersPage />', () => {
+  it('should render a server component', async () => {
+    // stub window.fetch
+    cy.stub(window, 'fetch').resolves({
+      json: cy.stub().resolves(users),
+    })
 
-    cy.mount(<UsersPage />)
+    // await the server component
+    const comp = await UsersPage()
+
+    // mount the awaited server component
+    cy.mount(comp)
   })
 })
