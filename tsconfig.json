@@ -18,12 +18,17 @@
         "name": "next"
       }
     ],
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@cypress/*": ["./cypress/*"],
+      "@support/*": ["./cypress/support/*"],
+      "@fixtures/*": ["./cypress/fixtures/*"]
     }
   },
   "include": [
     "next-env.d.ts",
+    "cypress.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
