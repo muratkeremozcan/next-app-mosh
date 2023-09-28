@@ -1,9 +1,6 @@
 // 'use server' // Cannot find module 'react-server-dom-webpack/client' https://github.com/cypress-io/cypress/issues/27890
-type User = {
-  id: number
-  name: string
-  email: string
-}
+import type {User} from './types'
+import UsersTable from './UsersTable'
 
 export default async function UsersPage() {
   const res = await fetch('https://jsonplaceholder.typicode.com/users', {
@@ -19,22 +16,7 @@ export default async function UsersPage() {
   return (
     <>
       <h1>Users</h1>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(user => (
-            <tr data-cy={`user-${user.id}`} key={user.id}>
-              <td data-cy={user.name}>{user.name}</td>
-              <td data-cy={user.email}>{user.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <UsersTable users={users} />
     </>
   )
 }

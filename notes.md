@@ -1,4 +1,4 @@
-## Lesson1
+## NextJS fundamentals
 
 App routing is setup under `./app`
 
@@ -212,15 +212,21 @@ If we had something like this, in development mode time would update, but in
 production mode it would never change.
 
 ```tsx
-<>
-  <h1>Users</h1>
-  <p>{new Date().toLocaleTimeString()}</p>
-  <ul>
-    {users.map(user => (
-      <li key={user.id}>{user.name}</li>
-    ))}
-  </ul>
-</>
+// ./app/users/page.tsx
+
+export default async function UsersPage() {
+...
+
+  <>
+    <h1>Users</h1>
+    <p>{new Date().toLocaleTimeString()}</p>
+    <ul>
+      {users.map(user => (
+        <li key={user.id}>{user.name}</li>
+      ))}
+    </ul>
+  </>
+}
 ```
 
 `npm run build && npm start` for production mode. After build, it will show us
@@ -232,16 +238,26 @@ If we specify no cache, then it would not be a static page, but instead be
 server side rendered (SSR).
 
 ```tsx
-const res = await fetch('https://jsonplaceholder.typicode.com/users', {
-  cache: 'no-store',
-})
+// ./app/users/page.tsx
+export default async function UsersPage() {
+  const res = await fetch('https://jsonplaceholder.typicode.com/users', {
+    cache: 'no-store',
+  })
+  ...
+}
 ```
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/1gq0ghejoy3toqp73cjk.png)
 
 ## Styles
 
+In Next.js projects, we define global styles in `/app/global.css`. Reserve this file for global styles that need to be applied across multiple pages and components. Avoid adding excessive styles to this file, as it can quickly grow out of hand and become difficult to maintain
+
 ### CSS modules
+
+In traditional CSS, if we define the same class in two different files, one will overwrite the other depending on the order in which these files are imported. CSS modules help us prevent this problem. A CSS module is a CSS file that is scoped to a page or component.
+
+During the build process, Next.js uses a tool called PostCSS to transform our CSS class names and generate unique class names. This prevents clashes between different CSS classes across the application.
 
 Name the file `foo.module.css.`
 
@@ -273,6 +289,8 @@ export default function ProductCard() {
 
 ### Tailwind
 
+Ta i l w i n d is a widely-used CSS framework for styling application. It offers a comprehensive set of small, reusable utility classes. We can combine these classes to create beautiful user interfaces
+
 https://tailwindcss.com/docs/customizing-colors
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/skkimhbu299gqyxj8yro.png)
@@ -294,7 +312,85 @@ export default function ProductCard() {
 }
 ```
 
+### How do we deal with duplicated styles?
+
+If you have multiple components sharing the same styles in Tailwind CSS, there are several strategies you can employ to avoid duplicating the styles:
+
+1. **CSS Component Classes with `@apply`**:
+    You can create custom component classes in your CSS using the `@apply` directive. 
+
+    ```css
+    /* styles.css or tailwind.css */
+    .product-card {
+        @apply p-5 m-5 bg-sky-400 text-white text-xl;
+    }
+    
+    .product-card:hover {
+        @apply bg-sky-500;
+    }
+    ```
+
+    Now, you can use this class in your JSX:
+
+    ```jsx
+    export default function ProductCard() {
+      return (
+        <div className="product-card">
+          <AddToCart />
+        </div>
+      )
+    }
+    ```
+
+2. **JS/JSX Utility Functions**:
+   You can create a utility function that returns a string of the common class names.
+
+    ```jsx
+    function productCardStyles() {
+      return "p-5 m-5 bg-sky-400 text-white text-xl hover:bg-sky-500";
+    }
+   
+    export default function ProductCard() {
+      return (
+        <div className={productCardStyles()}>
+          <AddToCart />
+        </div>
+      )
+    }
+    ```
+
+3. **Wrap with a Shared Component**:
+   You can create a shared component that wraps the content with the shared styles.
+
+    ```jsx
+    function StyledDiv({ children }) {
+      return (
+        <div className="p-5 m-5 bg-sky-400 text-white text-xl hover:bg-sky-500">
+          {children}
+        </div>
+      );
+    }
+   
+    export default function ProductCard() {
+      return (
+        <StyledDiv>
+          <AddToCart />
+        </StyledDiv>
+      )
+    }
+    ```
+
+4. **Context or Theming**:
+   If you want more dynamic styles or you're looking to theme your components, consider using a context or some kind of theming approach. This is more involved but allows for greater flexibility. (daisyUI)
+
+5. **Extracting Plugins in Tailwind**:
+    If you find that you are creating a lot of custom component styles, you might also consider creating plugins to extract these patterns for easier reuse. This is a more advanced use-case and requires more configuration.(daisyUI)
+
+Whatever method you choose, the aim is to keep your codebase DRY (Don't Repeat Yourself), maintainable, and easy to understand. Choose the method that feels the most natural to your project's scale and the team's preferences.
+
 ### daisyUI (bootstrap for Tailwind)
+
+DaisyUI is a component library built on top of Tailwind. It provides a collection of pre-designed and reusable components such as accordion, badge, card, etc.
 
 Install and add to plugins in `tailwind.config.css`.
 
@@ -319,3 +415,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
   )
 }
 ```
+
+## Routing
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/vsp5ck6kezxohcfdgdut.png)
