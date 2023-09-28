@@ -30,6 +30,15 @@ declare global {
         component: React.ReactNode,
         options?: MountOptions,
       ): Cypress.Chainable<MountReturn>
+
+      /** Mounts the component wrapped by RootLayout (for styles)
+       * @param component React Node to mount
+       * @param options Additional options to pass into mount
+       */
+      wrappedMount(
+        component: React.ReactNode,
+        options?: MountOptions,
+      ): Cypress.Chainable<MountReturn>
     }
   }
 }

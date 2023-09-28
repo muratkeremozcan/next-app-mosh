@@ -1,7 +1,8 @@
-import UsersTable from './page'
+import UsersTable from './UsersTable'
+import users from '@fixtures/users.json'
 
 describe('<UsersTable />', () => {
   it('should ', () => {
-    cy.mount(<UsersTable />)
+    cy.mount(<UsersTable users={users} />)
   })
 })
