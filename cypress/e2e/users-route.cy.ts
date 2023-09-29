@@ -1,4 +1,4 @@
-describe('e2e sanity', () => {
+describe('Users route', () => {
   beforeEach(() => {
     cy.visit('/')
     cy.contains('Hello World')
@@ -7,7 +7,9 @@ describe('e2e sanity', () => {
   })
 
   it('should nav to users', () => {
-    cy.intercept('GET', '/users?*').as('getUsers')
+    // when we are click-navigating to a route, there is a network call,
+    // we can stub that network call
+    cy.intercept('GET', '/users?*', {fixture: 'users.json'}).as('getUsers')
     cy.contains(/users/i).click()
 
     cy.wait('@getUsers')
