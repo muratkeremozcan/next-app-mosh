@@ -9,7 +9,7 @@ describe('<UsersPage />', () => {
     })
 
     // await the server component
-    const comp = await UsersPage()
+    const comp = await UsersPage({searchParams: {sortOrder: 'name'}})
 
     // mount the awaited server component
     cy.mount(comp)
