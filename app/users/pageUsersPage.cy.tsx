@@ -13,5 +13,7 @@ describe('<UsersPage />', () => {
 
     // mount the awaited server component
     cy.mount(comp)
+
+    cy.getByCy('user-table-comp')
   })
 })
