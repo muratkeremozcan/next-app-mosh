@@ -3,7 +3,7 @@
 App routing is setup under `./app`
 
 By default all components in the `./app` folder are server components. If we
-want to make them client components, `use client`
+want to make them client components, `'use client'` at the top of the file.
 
 ### Why use server components?
 
@@ -49,17 +49,18 @@ latency.
 With Next.js and its server component feature, some of these steps are
 streamlined
 
-- No explicit api endpoints
-- No need to create explicit API endpoints; server-side functions can be
-  directly called from components.
-- Automatic handling of data serialization, reducing manual processing (no
-  JSON.stringify or JSON.parse).
-- Data fetching is optimized and closer to the UI, reducing over-fetching.
-- Can reduce the number of round trips to the server, as you can perform
-  operations and return updated UI in one go.
-- Unified error handling without needing to split logic between an API endpoint
-  and client code.
-- A more integrated development experience blending server and client logic.
+1. No need to create explicit API endpoints; server-side functions can be
+   directly called from components (1, 3, 4 above)
+2. Data fetching is optimized; you still need send a request (2 above):
+   - Reduces the number of round trips to the server, as you can perform
+     operations and return updated UI in one go.
+   - Automatic handling of data serialization, reducing manual processing (no
+     JSON.stringify or JSON.parse).
+   - Unified error handling without needing to split logic between an API
+     endpoint and client code.
+3. No need to manage state in a server component (5 above), however, once they
+   are rendered, their output doesn't reactively update in response to changes
+   like client components.
 
 Whenever fetching data, we should prefer server components.
 
@@ -332,8 +333,13 @@ Ex: `/users/2/`
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pu7lkbsi6daoasw974pp.png)
 
+Use the `params` object (as a prop) in the component to utilize dynamic routes.
+
 ```tsx
 // ./app/users/[id]/page.tsx
+
+// single param case for dynamic route;
+// use the `params` object (as a prop) in the component to utilize it.
 type UserDetailsPageProps = {
   params: {
     id: number
@@ -345,14 +351,21 @@ export default function UserDetailPage({params: {id}}: UserDetailsPageProps) {
 }
 ```
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/vvi62a1k70r5t3o50gaf.png)
+
 If we wanted a route with nested parameters, we would nest the folders in turn.
 
 Ex: `/users/2/photos/5`
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/iwm9kabg5z8m9of7cgn7.png)
 
+Multiple params case, where params object has all the parameters we are using:
+
 ```tsx
 // ./app/users/[id]/photos/[photoId]/page.tsx
+
+// multiple params case for dynamic route,
+// where params object has all the parameters we are using
 type PhotosDetailsPageProps = {
   params: {
     id: number
@@ -369,5 +382,244 @@ export default function PhotoDetailPage({
     </div>
   )
 }
+
 ```
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x8j7cvffybd5anjvp28d.png)
+
+### Catch-all segments (varying number of parameters in a route)
+
+Let's say we do not know what the parameters might be, they vary.
+
+`/products/grocery/dairy/milk`
+
+We use the `...` syntax (similar to object de-structuring) with the parameter syntax `[ ]`.
+And, to make the varying parameters optional, we have another set of brackets `[[... ]]` . This way, the `/products` portion of /`products/everythingElse` works by itself
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/alp8t1ed6xlek0hzt99u.png)
+
+```tsx
+// ./app/products/[[...slug]]/page.tsx
+
+// Dynamic route + catch all segment
+// for catch-all segments, the convention is to name the param "slug"
+type ProductPageProps = {
+  params: {
+    slug: string[]
+  }
+}
+
+export default function ProductPage({params: {slug}}: ProductPageProps) {
+  return <div>ProductPage {slug}</div>
+}
+```
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/7kovjd8qr61gryeb79cx.png)
+
+### Accessing query string parameters
+
+To access query string parameters, we use `searchParams` object as a prop in the component
+
+```tsx
+// ./app/products/[[...slug]]/page.tsx
+
+// Dynamic route + catch-all segment + query string param:
+type ProductPageProps = {
+  params: {
+    // for catch-all segments, the convention is to name the param "slug"
+    slug: string[]
+  }
+  // to access query string parameters
+  // we use `searchParams` object as a prop in the component
+  searchParams: {
+    sortOrder: string
+  }
+}
+
+export default function ProductPage({
+  params: {slug},
+  searchParams: {sortOrder},
+}: ProductPageProps) {
+  return (
+    <div>
+      ProductPage {slug}, SortOrder {sortOrder}
+    </div>
+  )
+}
+```
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/6we5du9ji3a23xled3lq.png)
+
+### Using query-string parameters for managing (server side) state
+
+Let's say we want to sort users by name or email in the `UsersTable` component.
+
+In a typical client-side application using React, you'd approach this problem by maintaining a state for the `sortOrder` and modifying it based on user actions (e.g., button/link clicks). Here's a general idea:
+
+1. Use React state to maintain the `sortOrder`.
+2. Add click handlers to modify this state when sorting links are clicked.
+3. Use the state value to sort the data when rendering.
+
+Let's write the component in a client-side React context:
+
+```tsx
+import React, { useState } from 'react';
+import type {User} from './types'
+import {sort} from 'fast-sort'
+
+type UsersTableProps = {
+  users: User[]
+}
+
+export default function UsersTable({ users }: UsersTableProps) {
+  const [sortOrder, setSortOrder] = useState('name'); // default sort order to 'name'
+
+  const sortedUsers = sort(users).asc(
+    sortOrder === 'email' ? user => user.email : user => user.name,
+  );
+
+  const handleSort = (order: string) => {
+    setSortOrder(order);
+  }
+
+  return (
+    <table data-cy="user-table-comp" className="table table-bordered">
+      <thead>
+        <tr>
+          <th>
+            <a data-cy="sort-by-name" href="#" onClick={() => handleSort('name')}>
+              Name
+            </a>
+          </th>
+          <th>
+            <a data-cy="sort-by-email" href="#" onClick={() => handleSort('email')}>
+              Email
+            </a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {sortedUsers.map(user => (
+          <tr data-cy={`user-${user.id}`} key={user.id}>
+            <td data-cy={user.name}>{user.name}</td>
+            <td data-cy={user.email}>{user.email}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+```
+
+Key differences from the upcoming Next.js version:
+
+1. We're using React's `useState` to handle the `sortOrder` state.
+2. Instead of the `Link` component, we're using a regular `<a>` tag with an `onClick` handler to change the `sortOrder`.
+3. We're preventing the default behavior of the `<a>` tag to avoid page reload using `href="#"`.
+
+**How would we do the same in Next.js (sort users by name or email in the `UsersTable` component)?**
+
+We can take advantage of the combination of how Next.js handles client-side navigation and the way data fetching works in Next.js.
+
+When we use the `Link` component in Next.js (instead of an `<a>` tag), clicking the link doesn't lead to a full-page reload (thanks to client-side navigation). Instead, Next.js fetches just the required data for the new page (or in this case, the new query string parameter) and updates the page using React's re-rendering.
+
+1. The browser URL is updated to `/users?sortOrder=name` or `email` without a full page reload.
+2. The data is fetched and sorted accordingly based on the `sortOrder` query parameter.
+3. The UI is (re)rendered with the sorted data.
+
+At `UsersPage` parent component, we already have the `users` data.
+
+At child `UsersTable` component, we click Name or Email, and the `sortOrder` is determined with the  url we are on; `href=/users?sortOrder=name`. 
+
+At this point we have sorted data, and we just render it.
+
+```tsx
+// ./app/users/page.tsx
+
+import type {User} from './types'
+import UsersTable from './UsersTable'
+
+type UsersPageProps = {
+  // to access query string parameters
+  // we use `searchParams` object as a prop in the component
+  searchParams: {
+    sortOrder: string
+  }
+}
+
+export default async function UsersPage({
+  searchParams: {sortOrder},
+}: UsersPageProps) {
+  const res = await fetch('https://jsonplaceholder.typicode.com/users', {
+    cache: 'no-store',
+  })
+  const users: User[] = await res.json()
+
+  return (
+    <>
+      <h1>Users</h1>
+      <UsersTable users={users} sortOrder={sortOrder} />
+    </>
+  )
+}
+```
+
+
+
+```tsx 
+// ./app/users/UsersTable.tsx
+
+// 'use client' // this could be a client component, but nothing really requires it:
+// we don't need to listen to browser events, access browser apis, maintain state or use effects
+// so we take advantage of server component benefits:
+// smaller bundle, resource efficient, SEO, more secure
+import Link from 'next/link'
+import type {User} from './types'
+import {sort} from 'fast-sort'
+
+type UsersTableProps = {
+  users: User[]
+  sortOrder?: string
+}
+
+export default function UsersTable({
+  users,
+  sortOrder = 'name',
+}: UsersTableProps) {
+  // fast-sort lib gives convenience for sorting data
+  const sortedUsers = sort(users).asc(
+    sortOrder === 'email' ? user => user.email : user => user.name,
+  )
+
+  return (
+    <table data-cy="user-table-comp" className="table table-bordered">
+      <thead>
+        <tr>
+          {/* we use next/link instead of <a> to take advantage client-side navigation (caching) */}
+          <th>
+            <Link data-cy="sort-by-name" href="/users?sortOrder=name">
+              Name
+            </Link>
+          </th>
+          <th>
+            <Link data-cy="sort-by-email" href="users?sortOrder=email">
+              Email
+            </Link>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {sortedUsers.map(user => (
+          <tr data-cy={`user-${user.id}`} key={user.id}>
+            <td data-cy={user.name}>{user.name}</td>
+            <td data-cy={user.email}>{user.email}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+```
+
+With this approach, in contrast to a client side application where we would have a state for the sort order, have a click event for the click and change the state onClick  we are doing the same at the server using query string parameters.
 

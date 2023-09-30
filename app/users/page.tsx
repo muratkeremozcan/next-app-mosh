@@ -3,7 +3,11 @@ import type {User} from './types'
 import UsersTable from './UsersTable'
 
 type UsersPageProps = {
-  searchParams: {sortOrder: string}
+  // to access query string parameters
+  // we use `searchParams` object as a prop in the component
+  searchParams: {
+    sortOrder: string
+  }
 }
 
 export default async function UsersPage({
