@@ -1,5 +1,4 @@
 import type {ReactNode} from 'react'
-import '../globals.css'
 
 type AdminLayoutProps = {
   children: ReactNode

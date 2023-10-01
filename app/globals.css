@@ -16,3 +16,10 @@ body {
   color: rgb(var(--foreground-rgb));
   padding: 1rem;
 }
+
+/* overriding base directive */
+@layer base {
+  h1 {
+    @apply font-extrabold text-2xl mb-3;
+  }
+}
