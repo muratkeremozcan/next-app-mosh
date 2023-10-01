@@ -623,3 +623,46 @@ export default function UsersTable({
 
 With this approach, in contrast to a client side application where we would have a state for the sort order, have a click event for the click and change the state onClick  we are doing the same at the server using query string parameters.
 
+### Layouts
+
+Layouts are used to create a UI that is shared between multiple pages.
+
+For ex: the `RootLayout` at `./app/layout.tsx` is the common UI for all the app.
+
+Suppose we want a different layout for admin users with a sidebar.
+
+```tsx
+// ./app/admin/layout.tsx
+
+import type {ReactNode} from 'react'
+import '../globals.css'
+
+type AdminLayoutProps = {
+  children: ReactNode
+}
+
+export default function AdminLayout({children}: AdminLayoutProps) {
+  return (
+    <div className="flex">
+      <aside data-cy="admin-sidebar" className="bg-slate-200 p-5 mr-5">
+        Admin Sidebar
+      </aside>
+      <div>{children}</div>
+    </div>
+  )
+}
+```
+
+```tsx
+// ./app/admin/page.tsx
+
+export default function AdminHomePage() {
+  return <div>Admin HomePage</div>
+}
+```
+
+
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/hho6anlx4adw77gtc5yr.png)
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/srhxi1e6uryhwn731t3o.png)
