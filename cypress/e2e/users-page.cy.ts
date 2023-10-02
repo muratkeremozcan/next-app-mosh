@@ -1,4 +1,4 @@
-describe('Sort users', () => {
+describe('Users', () => {
   beforeEach(() => {
     // when we are direct-navigating to a route,
     // the content is served from the server, as a document
@@ -14,5 +14,12 @@ describe('Sort users', () => {
 
     cy.getByCy('sort-by-email').click()
     cy.location('search').should('eq', '?sortOrder=email')
+  })
+
+  it('should click New User button', () => {
+    cy.getByCy('new-user').click()
+    cy.location('pathname').should('eq', '/users/new')
+    cy.getByCy('create').should('be.visible').click()
+    cy.location('pathname').should('eq', '/users')
   })
 })
