@@ -778,8 +778,8 @@ body {
 
 ### Link
 
-- Only downloads the content of the target page (click on Users link above it
-  only downloads the content for Users, not the nabber or anything else)
+- Only downloads the content of the target page (click on Users link, it only
+  downloads the content for Users)
 
   `rsc` for react server component.
 
@@ -800,7 +800,7 @@ body {
 
 ### Programmatic navigation
 
-Click a button, submit a form -> prog nav.
+Click a button, submit a form -> for these we need prog nav.
 
 We use `useRouter` from `next/navigation`, and `.push(/the-route )`.
 
