@@ -1,6 +1,7 @@
 // 'use server' // Cannot find module 'react-server-dom-webpack/client' https://github.com/cypress-io/cypress/issues/27890
 import type {User} from './types'
 import UsersTable from './UsersTable'
+import Link from 'next/link'
 
 type UsersPageProps = {
   // to access query string parameters
@@ -26,6 +27,9 @@ export default async function UsersPage({
   return (
     <>
       <h1>Users</h1>
+      <Link data-cy="new-user" href="/users/new" className="btn">
+        New User
+      </Link>
       <UsersTable users={users} sortOrder={sortOrder} />
     </>
   )

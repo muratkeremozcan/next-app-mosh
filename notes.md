@@ -382,7 +382,6 @@ export default function PhotoDetailPage({
     </div>
   )
 }
-
 ```
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x8j7cvffybd5anjvp28d.png)
@@ -393,8 +392,10 @@ Let's say we do not know what the parameters might be, they vary.
 
 `/products/grocery/dairy/milk`
 
-We use the `...` syntax (similar to object de-structuring) with the parameter syntax `[ ]`.
-And, to make the varying parameters optional, we have another set of brackets `[[... ]]` . This way, the `/products` portion of /`products/everythingElse` works by itself
+We use the `...` syntax (similar to object de-structuring) with the parameter
+syntax `[ ]`. And, to make the varying parameters optional, we have another set
+of brackets `[[... ]]` . This way, the `/products` portion of
+/`products/everythingElse` works by itself
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/alp8t1ed6xlek0hzt99u.png)
 
@@ -418,7 +419,8 @@ export default function ProductPage({params: {slug}}: ProductPageProps) {
 
 ### Accessing query string parameters
 
-To access query string parameters, we use `searchParams` object as a prop in the component
+To access query string parameters, we use `searchParams` object as a prop in the
+component
 
 ```tsx
 // ./app/products/[[...slug]]/page.tsx
@@ -454,7 +456,9 @@ export default function ProductPage({
 
 Let's say we want to sort users by name or email in the `UsersTable` component.
 
-In a typical client-side application using React, you'd approach this problem by maintaining a state for the `sortOrder` and modifying it based on user actions (e.g., button/link clicks). Here's a general idea:
+In a typical client-side application using React, you'd approach this problem by
+maintaining a state for the `sortOrder` and modifying it based on user actions
+(e.g., button/link clicks). Here's a general idea:
 
 1. Use React state to maintain the `sortOrder`.
 2. Add click handlers to modify this state when sorting links are clicked.
@@ -463,7 +467,7 @@ In a typical client-side application using React, you'd approach this problem by
 Let's write the component in a client-side React context:
 
 ```tsx
-import React, { useState } from 'react';
+import React, {useState} from 'react'
 import type {User} from './types'
 import {sort} from 'fast-sort'
 
@@ -471,15 +475,15 @@ type UsersTableProps = {
   users: User[]
 }
 
-export default function UsersTable({ users }: UsersTableProps) {
-  const [sortOrder, setSortOrder] = useState('name'); // default sort order to 'name'
+export default function UsersTable({users}: UsersTableProps) {
+  const [sortOrder, setSortOrder] = useState('name') // default sort order to 'name'
 
   const sortedUsers = sort(users).asc(
     sortOrder === 'email' ? user => user.email : user => user.name,
-  );
+  )
 
   const handleSort = (order: string) => {
-    setSortOrder(order);
+    setSortOrder(order)
   }
 
   return (
@@ -487,12 +491,20 @@ export default function UsersTable({ users }: UsersTableProps) {
       <thead>
         <tr>
           <th>
-            <a data-cy="sort-by-name" href="#" onClick={() => handleSort('name')}>
+            <a
+              data-cy="sort-by-name"
+              href="#"
+              onClick={() => handleSort('name')}
+            >
               Name
             </a>
           </th>
           <th>
-            <a data-cy="sort-by-email" href="#" onClick={() => handleSort('email')}>
+            <a
+              data-cy="sort-by-email"
+              href="#"
+              onClick={() => handleSort('email')}
+            >
               Email
             </a>
           </th>
@@ -514,22 +526,33 @@ export default function UsersTable({ users }: UsersTableProps) {
 Key differences from the upcoming Next.js version:
 
 1. We're using React's `useState` to handle the `sortOrder` state.
-2. Instead of the `Link` component, we're using a regular `<a>` tag with an `onClick` handler to change the `sortOrder`.
-3. We're preventing the default behavior of the `<a>` tag to avoid page reload using `href="#"`.
+2. Instead of the `Link` component, we're using a regular `<a>` tag with an
+   `onClick` handler to change the `sortOrder`.
+3. We're preventing the default behavior of the `<a>` tag to avoid page reload
+   using `href="#"`.
 
-**How would we do the same in Next.js (sort users by name or email in the `UsersTable` component)?**
+**How would we do the same in Next.js (sort users by name or email in the
+`UsersTable` component)?**
 
-We can take advantage of the combination of how Next.js handles client-side navigation and the way data fetching works in Next.js.
+We can take advantage of the combination of how Next.js handles client-side
+navigation and the way data fetching works in Next.js.
 
-When we use the `Link` component in Next.js (instead of an `<a>` tag), clicking the link doesn't lead to a full-page reload (thanks to client-side navigation). Instead, Next.js fetches just the required data for the new page (or in this case, the new query string parameter) and updates the page using React's re-rendering.
+When we use the `Link` component in Next.js (instead of an `<a>` tag), clicking
+the link doesn't lead to a full-page reload (thanks to client-side navigation).
+Instead, Next.js fetches just the required data for the new page (or in this
+case, the new query string parameter) and updates the page using React's
+re-rendering.
 
-1. The browser URL is updated to `/users?sortOrder=name` or `email` without a full page reload.
-2. The data is fetched and sorted accordingly based on the `sortOrder` query parameter.
+1. The browser URL is updated to `/users?sortOrder=name` or `email` without a
+   full page reload.
+2. The data is fetched and sorted accordingly based on the `sortOrder` query
+   parameter.
 3. The UI is (re)rendered with the sorted data.
 
 At `UsersPage` parent component, we already have the `users` data.
 
-At child `UsersTable` component, we click Name or Email, and the `sortOrder` is determined with the  url we are on; `href=/users?sortOrder=name`. 
+At child `UsersTable` component, we click Name or Email, and the `sortOrder` is
+determined with the url we are on; `href=/users?sortOrder=name`.
 
 At this point we have sorted data, and we just render it.
 
@@ -564,9 +587,7 @@ export default async function UsersPage({
 }
 ```
 
-
-
-```tsx 
+```tsx
 // ./app/users/UsersTable.tsx
 
 // 'use client' // this could be a client component, but nothing really requires it:
@@ -621,7 +642,9 @@ export default function UsersTable({
 }
 ```
 
-With this approach, in contrast to a client side application where we would have a state for the sort order, have a click event for the click and change the state onClick  we are doing the same at the server using query string parameters.
+With this approach, in contrast to a client side application where we would have
+a state for the sort order, have a click event for the click and change the
+state onClick we are doing the same at the server using query string parameters.
 
 ### Layouts
 
@@ -661,14 +684,12 @@ export default function AdminHomePage() {
 }
 ```
 
-
-
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/hho6anlx4adw77gtc5yr.png)
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/srhxi1e6uryhwn731t3o.png)
 
-Suppose we want to add a nav bar to all pages.
-This component could go in components folder, gut it is only used with `RootLayout` so it is fine at root.
+Suppose we want to add a nav bar to all pages. This component could go in
+components folder, gut it is only used with `RootLayout` so it is fine at root.
 
 ```tsx
 // ./app/NavBar.tsx
@@ -690,7 +711,8 @@ export default function NavBar() {
 }
 ```
 
-We use it in the `RootLayout`, in the `<body>`, above all children. We also wrap the children in `<main>` for semantic html's sake.
+We use it in the `RootLayout`, in the `<body>`, above all children. We also wrap
+the children in `<main>` for semantic html's sake.
 
 ```tsx
 // ./app/layout
@@ -719,7 +741,8 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 }
 ```
 
-At global styles, we can override the 3 directives on top with `@layer` and `@apply`
+At global styles, we can override the 3 directives on top with `@layer` and
+`@apply`
 
 ```css
 /* ./app/global.css */
@@ -749,7 +772,58 @@ body {
     @apply font-extrabold text-2xl mb-3;
   }
 }
-
 ```
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ppa3vgyzs20tfnid43sj.png)
+
+### Link
+
+- Only downloads the content of the target page (click on Users link above it
+  only downloads the content for Users, not the nabber or anything else)
+
+  `rsc` for react server component.
+
+  ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/buic7c7jt50me87i906c.png)
+
+- It pre-fetches the links that are in the viewport. We need to run the app in
+  production mode to see this:
+
+  `npm run build && npm start` The sort-by links (name and email) are
+  pre-fetched to improve performance.
+
+  ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/amju4hvrapm569tqd1e9.png)
+
+- Caches pages on the client.
+
+  Nav to Home and Users, clear Network. Repeat, and network will not get
+  anything new, because it is cached. The cache resets on a full page reload.
+
+### Programmatic navigation
+
+Click a button, submit a form -> prog nav.
+
+We use `useRouter` from `next/navigation`, and `.push(/the-route )`.
+
+```tsx
+'use client'
+// remember, we still need client components when we:
+// - Listen to browser events
+// - Access browser APIs
+// - Maintain state
+// - Use effects
+import {useRouter} from 'next/navigation'
+
+export default function NewUserPage() {
+  const router = useRouter()
+
+  return (
+    <button
+      data-cy="create"
+      className="btn btn-primary"
+      onClick={() => router.push('/users')}
+    >
+      Create
+    </button>
+  )
+}
+```
