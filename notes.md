@@ -946,4 +946,7 @@ export default function UserNotFound() {
 
 ## Handling unexpected errors
 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
