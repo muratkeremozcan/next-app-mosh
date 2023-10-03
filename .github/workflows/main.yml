@@ -61,10 +61,10 @@ jobs:
 
   cypress-e2e-test:
     #    if you want to enable parallelization
-    strategy:
-      fail-fast: false
-      matrix:
-        machines: [1]
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     machines: [1]
     needs: [install-dependencies]
     runs-on: ubuntu-latest
     steps:
@@ -88,10 +88,10 @@ jobs:
           wait-on: 'http://localhost:3000'
           browser: chrome
           # if you want to enable parallelization
-          record: true
-          parallel: true
-          group: e2e-tests
-          tag: e2e-tests
+          # record: true
+          # parallel: true
+          # group: e2e-tests
+          # tag: e2e-tests
         env:
           # if you want to enable parallelization
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
@@ -114,10 +114,10 @@ jobs:
 
   cypress-ct-test:
     # if you want to enable parallelization
-    strategy:
-      fail-fast: false
-      matrix:
-        machines: [1]
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     machines: [1]
     needs: [install-dependencies]
     runs-on: ubuntu-latest
     steps:
@@ -140,10 +140,10 @@ jobs:
           component: true
           browser: chrome
           # if you want to enable parallelization
-          record: true
-          parallel: true
-          group: ct-tests
-          tag: ct-tests
+          # record: true
+          # parallel: true
+          # group: ct-tests
+          # tag: ct-tests
         env:
           # if you want to enable parallelization
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
