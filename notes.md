@@ -898,7 +898,7 @@ export default function Loading() {
 }
 ```
 
-## Handling Not Found errors
+## Handling Not Found errors (not-found file)
 
 Similar to the `loading.tsx` file, NextJs has a `not-found.tsx` file we can use. The component gets rendered on a page that doesn't exist.
 
@@ -942,5 +942,34 @@ export default function UserNotFound() {
 }
 ```
 
-## Handling unexpected errors
+## Handling unexpected errors (error file)
 
+Similar to `loading.tsx` we can have an `error.tsx` file at different folder/route levels.
+
+We use the props `error` and `reset` (NexJS knows about these)
+
+```tsx
+// app/error.tsx
+
+'use client'
+
+type ErrorComponentProps = {
+  error: Error
+  reset: () => void
+}
+
+export default function ErrorComponent({error, reset}: ErrorComponentProps) {
+  console.error({error})
+  return (
+    <>
+      <div>An unexpected error has occurred:</div>
+      <button className="btn" onClick={() => reset()}>
+        Retry
+      </button>
+    </>
+  )
+}
+
+```
+
+But, we cannot capture errors that happen in the `RootLayout` file with `error-tax`. For that we create the file called `global-error.tsx`.
