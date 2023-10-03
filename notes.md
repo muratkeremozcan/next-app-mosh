@@ -828,9 +828,9 @@ export default function NewUserPage() {
 }
 ```
 
-### Showing Loading UIs 
+## Showing Loading UIs 
 
-#### React Suspense
+### React Suspense
 
 We can make use of React's Suspense api, wrapping the component that might be loading data.
 
@@ -880,7 +880,7 @@ If we want to add Suspense to every component, it can be in the `RootLayout` com
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/f96t13rvrjkczaqi7sus.png)
 
-#### Using the `loading.tsx` file
+### Using the `loading.tsx` file
 
 In the case of using `loading.tsx` file, we do not use Suspense. We can place it where we want to loading pages to show. If we put it under app, it will show for everything.
 
@@ -899,4 +899,48 @@ export default function Loading() {
 ```
 
 ## Handling Not Found errors
+
+Similar to the `loading.tsx` file, NextJs has a `not-found.tsx` file we can use. The component gets rendered on a page that doesn't exist.
+
+```tsx
+// ./app/not-found.tsx
+
+export default function NotFound() {
+  return <div>The requested page does not exist</div>
+}
+```
+
+If we want not found pages specific to the routes, we use the built-in notFound() function. This redirects us to the NotFound page above.
+
+If we want to further customize the not found page on the sub routes, we create `not-found.tsx` files in that route
+
+```tsx
+// ./app/users/[id]/page.tsx
+
+// using the built-in notFound component
+import {notFound} from 'next/navigation'
+
+type UserDetailsPageProps = {
+  params: {
+    id: number
+  }
+}
+
+export default function UserDetailPage({params: {id}}: UserDetailsPageProps) {
+  if (id > 10) notFound() // just an elaborate example
+  return <div>UserDetailPage {id}</div>
+}
+```
+
+If we do not have this file, it will just show the default not-found.tsx at the app root.
+
+```tsx
+//./app/users/[id]/not-found.tsx
+
+export default function UserNotFound() {
+  return <div>The user is not found.</div>
+}
+```
+
+## Handling unexpected errors
 
