@@ -827,3 +827,76 @@ export default function NewUserPage() {
   )
 }
 ```
+
+### Showing Loading UIs 
+
+#### React Suspense
+
+We can make use of React's Suspense api, wrapping the component that might be loading data.
+
+
+```tsx
+// ./app/users/page.tsx
+
+import {Suspense} from 'react'
+import type {User} from './types'
+import UsersTable from './UsersTable'
+import Link from 'next/link'
+
+type UsersPageProps = {
+as a prop in the component
+  searchParams: {
+    sortOrder: string
+  }
+}
+
+export default async function UsersPage({
+  searchParams: {sortOrder},
+}: UsersPageProps) {
+  const res = await fetch('https://jsonplaceholder.typicode.com/users', {
+    cache: 'no-store', 
+  })
+  const users: User[] = await res.json()
+
+  return (
+    <>
+      <h1>Users</h1>
+      <Link data-cy="new-user" href="/users/new" className="btn">
+        New User
+      </Link>
+      <Suspense fallback={<div>Loading...</div>}>
+        <UsersTable users={users} sortOrder={sortOrder} />
+      </Suspense>
+    </>
+  )
+}
+```
+
+To see it in action, use React dev tools, search for Suspense, and on the right pane click on the clock icon.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dei8ngl7v5rma7rbbdkt.png)
+
+If we want to add Suspense to every component, it can be in the `RootLayout` component, wrapping the children or use the special loading file in NextJs.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/f96t13rvrjkczaqi7sus.png)
+
+#### Using the `loading.tsx` file
+
+In the case of using `loading.tsx` file, we do not use Suspense. We can place it where we want to loading pages to show. If we put it under app, it will show for everything.
+
+We can use https://daisyui.com/components/loading/ from daisyUI
+
+```tsx
+// ./app/loading.tsx
+
+export default function Loading() {
+  return (
+    <div>
+      <span className="loading loading-spinner loading-md"></span>
+    </div>
+  )
+}
+```
+
+## Handling Not Found errors
+
