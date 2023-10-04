@@ -1,9 +1,9 @@
-## Lesson1
+## Basics
 
 App routing is setup under `./app`
 
 By default all components in the `./app` folder are server components. If we
-want to make them client components, `'use client'` at the top of the file.
+want to make them client components, we insert `'use client'` at the top of the file.
 
 ### Why use server components?
 
@@ -162,8 +162,7 @@ export default function UsersPage() {
 
 We still have to spot-use client components, because server components cannot:
 
-- Listen to browser events
-- Access browser APIs
+- Listen to browser events, or access browser APIs
 - Maintain state
 - Use effects
 
@@ -302,10 +301,32 @@ Install and add to plugins in `tailwind.config.css`.
 To use themes, add a daisy property with themes.
 
 ```js
-plugins: [require('daisyui')],
-daisyui: {
-  themes: ['winter'],
-},
+// ./tailwind.config.ts
+
+import type {Config} from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+    },
+  },
+  plugins: [require('daisyui')],
+  daisyui: {
+    themes: ['winter'],
+  },
+}
+export default config
+
 ```
 
 Apply the theme globally at `layout.tsx`
@@ -325,9 +346,25 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 
 Any folder under app (except `components`) creates a route.
 
-### Dynamic route
+App router looks for special files such to define the routes:
 
-A route with a parameter. The syntax is like so.
+* `page.tsx`
+
+* `layout.tsx`
+
+* `loading.tsx`
+
+* `not-found.tsx`
+
+* `error.tsx`
+
+  
+
+### Dynamic route (`params`)
+
+A dynamic route is one that takes one or more parameters. To add parameters to our routes, we wrap directory names with square brackets (eg [id])
+
+A route with a parameter. The syntax is like so:
 
 Ex: `/users/2/`
 
@@ -386,7 +423,7 @@ export default function PhotoDetailPage({
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x8j7cvffybd5anjvp28d.png)
 
-### Catch-all segments (varying number of parameters in a route)
+### Catch-all segments (varying number of parameters in a route) `[][...slug]]`
 
 Let's say we do not know what the parameters might be, they vary.
 
@@ -417,7 +454,7 @@ export default function ProductPage({params: {slug}}: ProductPageProps) {
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/7kovjd8qr61gryeb79cx.png)
 
-### Accessing query string parameters
+### Accessing query string parameters `searchParams`
 
 To access query string parameters, we use `searchParams` object as a prop in the
 component
@@ -453,6 +490,8 @@ export default function ProductPage({
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/6we5du9ji3a23xled3lq.png)
 
 ### Using query-string parameters for managing (server side) state
+
+In standard React applications, we use the state hook for managing component state. In server-rendered applications, however, we use query string parameters to keep state. This also allows us to bookmark our pages in specific state. For example, we can bookmark a filtered and sorted list of products
 
 Let's say we want to sort users by name or email in the `UsersTable` component.
 
@@ -652,7 +691,9 @@ Layouts are used to create a UI that is shared between multiple pages.
 
 For ex: the `RootLayout` at `./app/layout.tsx` is the common UI for all the app.
 
-Suppose we want a different layout for admin users with a sidebar.
+We can create additional layouts for specific areas of our application (eg /app/admin/layout.tsx).
+
+Suppose we want a different layout for admin users with a sidebar:
 
 ```tsx
 // ./app/admin/layout.tsx
@@ -741,7 +782,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 }
 ```
 
-At global styles, we can override the 3 directives on top with `@layer` and
+For further styling at each component, at global styles, we can override the 3 directives on top with `@layer` and
 `@apply`
 
 ```css
@@ -781,19 +822,20 @@ body {
 - Only downloads the content of the target page (click on Users link, it only
   downloads the content for Users)
 
-  `rsc` for react server component.
+  `rsc` indicates that it is a react server component.
 
   ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/buic7c7jt50me87i906c.png)
 
-- It pre-fetches the links that are in the viewport. We need to run the app in
-  production mode to see this:
-
+- Prefetches the links that are in the viewport, to provide smooth navigation between pages,
+  
+  We need to run the app in production mode to see this:
+  
   `npm run build && npm start` The sort-by links (name and email) are
   pre-fetched to improve performance.
-
+  
   ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/amju4hvrapm569tqd1e9.png)
-
-- Caches pages on the client.
+  
+- Caching; as the user moves around our application, Next.js stores the page content in a cache on the client. So, if they revisit a page that already exists in the cache, Next.js simply grabs it from the cache instead of making a new request to the server. The client cache exists in the browser’s memory and lasts for an entire session. It gets reset when we do a full refresh. 
 
   Nav to Home and Users, clear Network. Repeat, and network will not get
   anything new, because it is cached. The cache resets on a full page reload.
@@ -828,9 +870,9 @@ export default function NewUserPage() {
 }
 ```
 
-## Showing Loading UIs 
+### Showing Loading UIs 
 
-### React Suspense
+#### React Suspense
 
 We can make use of React's Suspense api, wrapping the component that might be loading data.
 
@@ -880,7 +922,7 @@ If we want to add Suspense to every component, it can be in the `RootLayout` com
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/f96t13rvrjkczaqi7sus.png)
 
-### Using the `loading.tsx` file
+#### Using the `loading.tsx` file
 
 In the case of using `loading.tsx` file, we do not use Suspense. We can place it where we want to loading pages to show. If we put it under app, it will show for everything.
 
@@ -898,7 +940,9 @@ export default function Loading() {
 }
 ```
 
-## Handling Not Found errors (not-found file)
+### Handling Errors
+
+#### Not Found errors (not-found.tsx file)
 
 Similar to the `loading.tsx` file, NextJs has a `not-found.tsx` file we can use. The component gets rendered on a page that doesn't exist.
 
@@ -911,8 +955,6 @@ export default function NotFound() {
 ```
 
 If we want not found pages specific to the routes, we use the built-in notFound() function. This redirects us to the NotFound page above.
-
-If we want to further customize the not found page on the sub routes, we create `not-found.tsx` files in that route
 
 ```tsx
 // ./app/users/[id]/page.tsx
@@ -932,6 +974,8 @@ export default function UserDetailPage({params: {id}}: UserDetailsPageProps) {
 }
 ```
 
+If we want to further customize the not found page on the sub routes, we create `not-found.tsx` files in that route.
+
 If we do not have this file, it will just show the default not-found.tsx at the app root.
 
 ```tsx
@@ -942,11 +986,11 @@ export default function UserNotFound() {
 }
 ```
 
-## Handling unexpected errors (error file)
+#### Unexpected errors (error.tsx file)
 
 Similar to `loading.tsx` we can have an `error.tsx` file at different folder/route levels.
 
-We use the props `error` and `reset` (NexJS knows about these)
+We use the props `error` and `reset` (NexJS knows about these).
 
 ```tsx
 // app/error.tsx
@@ -973,3 +1017,5 @@ export default function ErrorComponent({error, reset}: ErrorComponentProps) {
 ```
 
 But, we cannot capture errors that happen in the `RootLayout` file with `error-tax`. For that we create the file called `global-error.tsx`.
+
+## Building APIs
