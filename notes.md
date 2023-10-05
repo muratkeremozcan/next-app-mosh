@@ -1019,3 +1019,71 @@ export default function ErrorComponent({error, reset}: ErrorComponentProps) {
 But, we cannot capture errors that happen in the `RootLayout` file with `error-tax`. For that we create the file called `global-error.tsx`.
 
 ## Building APIs
+
+The convention is to use a folder named `api` for backend. You cannot have `page.tsx` and `route.ts` in the same folder. `route.ts` files are where we handle requests.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/0kpoovv16zw7p79jik21.png)
+
+```tsx
+// ./app/api/users/route.ts
+
+import {NextResponse, type NextRequest} from 'next/server'
+
+// need to have an argument (although not used) to prevent NextJs caching the result
+// which would be fine, really, because the result is always the same...
+export function GET(request: NextRequest) {
+  return NextResponse.json([
+    {id: 1, name: 'John Doe'},
+    {id: 2, name: 'Jane Doe'},
+  ])
+}
+```
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x16hkm4629lywdok2i09.png)
+
+### Getting a single object
+
+Similar parameter convention to dynamic routes for pages, here we are also using the params object as a prop.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/scqcz76uwxb7b63ew050.png)
+
+The only difference is that the object is the second argument.
+
+```ts
+// ./app/api/users/[id]/route.ts
+
+import {NextResponse, type NextRequest} from 'next/server'
+
+type Props = {
+  params: {
+    id: number
+  }
+}
+
+export function GET(request: NextRequest, {params: {id}}: Props) {
+  if (id > 10) return NextResponse.json({error: 'User not found'})
+
+  return NextResponse.json({id: 1, name: 'Murat'})
+}
+```
+
+Compare to dynamic route for a page.
+
+```tsx
+// using the built-in notFound component
+import {notFound} from 'next/navigation'
+
+// single param case for dynamic route;
+// use the `params` object (as a prop) in the component to utilize it.
+type UserDetailsPageProps = {
+  params: {
+    id: number
+  }
+}
+
+export default function UserDetailPage({params: {id}}: UserDetailsPageProps) {
+  if (id > 10) notFound()
+  return <div>UserDetailPage {id}</div>
+}
+```
+
