@@ -1,5 +1,23 @@
 ## Basics
 
+New stuff in Next:
+
+1. **Static Site Generation (SSG):** This allows for a blazing fast performance since pages are generated at build time and served as static files. It can be especially useful for content-driven sites where the data doesn't change frequently.
+
+2. **Server-side Rendering (SSR):** Perfect for pages where content changes often or is based on user data. It allows content to be generated on the server at runtime for each request.
+
+3. **API Routes:** With `api/` routes, you can easily build your API endpoints within the Next.js app, making it a seamless integration between your frontend and backend.
+
+4. **File System-Based Routing:** No need for complicated routing setups. Your file and folder structure directly translate to your app's routes.
+
+5. **Built-in CSS and Sass Support:** With Next.js, you can import CSS directly into your components without additional configurations.
+
+6. **Image Optimization:** The `next/image` component allows for automatic optimization of images for faster load times and better performance.
+
+7. **Fast Refresh:** Experience near-instant feedback during development. Any changes in your React components reflect instantly without losing component state.
+
+8. **TypeScript Support:** If you prefer TypeScript, Next.js provides an out-of-the-box setup to support it.
+
 App routing is setup under `./app`
 
 By default all components in the `./app` folder are server components. If we
