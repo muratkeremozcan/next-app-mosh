@@ -1022,6 +1022,8 @@ But, we cannot capture errors that happen in the `RootLayout` file with `error-t
 
 The convention is to use a folder named `api` for backend. You cannot have `page.tsx` and `route.ts` in the same folder. `route.ts` files are where we handle requests.
 
+The main idea here is that routes like PUT, DELETE, and sometimes GET need an id, and go to a certain route. Routes like POST, and sometimes GET, hit a generic route. Based on that wide-spread fact, Next.js houses the routes in certain route folders.
+
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/0kpoovv16zw7p79jik21.png)
 
 ```tsx
@@ -1042,6 +1044,8 @@ export function GET(request: NextRequest) {
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x16hkm4629lywdok2i09.png)
 
 ### Getting a single object
+
+
 
 Similar parameter convention to dynamic routes for pages, here we are also using the params object as a prop.
 
@@ -1070,6 +1074,8 @@ export function GET(request: NextRequest, {params: {id}}: Props) {
 Compare to dynamic route for a page.
 
 ```tsx
+// ./app/users/[id]/page.tsx
+
 // using the built-in notFound component
 import {notFound} from 'next/navigation'
 
@@ -1084,6 +1090,87 @@ type UserDetailsPageProps = {
 export default function UserDetailPage({params: {id}}: UserDetailsPageProps) {
   if (id > 10) notFound()
   return <div>UserDetailPage {id}</div>
+}
+```
+
+### Updating and Deleting a single object
+
+Similar to Get, Update are Delete are at `api/users/[id]/route.ts`, because they interact with an entity that has an id.
+
+```ts
+// ./app/api/users/[id]/route.ts
+
+import {NextResponse, type NextRequest} from 'next/server'
+
+type Props = {
+  params: {
+    id: number
+  }
+}
+
+export function GET(request: NextRequest, {params: {id}}: Props) {
+  if (id > 10) return NextResponse.json({error: 'User not found'})
+
+  return NextResponse.json({id: 1, name: 'Murat'})
+}
+
+export async function PUT(request: NextRequest, {params: {id}}: Props) {
+  const body = await request.json()
+  if (!body.name) {
+    return NextResponse.json({error: 'Name is required'}, {status: 400})
+  }
+
+  if (id > 10)
+    return NextResponse.json({error: 'User not found'}, {status: 404})
+
+  return NextResponse.json({id: Number(id), name: body.name})
+}
+
+export async function DELETE(request: NextRequest, {params: {id}}: Props) {
+  if (id > 10)
+    return NextResponse.json({error: 'User not found'}, {status: 404})
+
+  return NextResponse.json({})
+}
+```
+
+
+
+### Getting objects, Posting an object
+
+These all go to the `api/users/route.ts` since they do not take an id.
+
+```tsx
+// ./app/api/users/route.ts
+
+import {NextResponse, type NextRequest} from 'next/server'
+
+// need to have an argument (although not used) 
+// to prevent NextJs caching the result
+// which would be fine, really, because the result is always the same...
+export function GET(request: NextRequest) {
+  return NextResponse.json([
+    {id: 1, name: 'John Doe'},
+    {id: 2, name: 'Jane Doe'},
+  ])
+}
+
+const getRandomId = (min = 1, max = 100) =>
+  Math.floor(Math.random() * (max - min + 1)) + min
+
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  if (!body.name) {
+    return NextResponse.json(
+      {error: 'Name is required'}, 
+      {status: 400}
+    )
+  }
+
+  return NextResponse.json(
+    {id: getRandomId(), name: body.name},
+    {status: 201}
+  )
 }
 ```
 
