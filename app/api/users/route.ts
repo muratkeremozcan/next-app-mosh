@@ -8,3 +8,15 @@ export function GET(request: NextRequest) {
     {id: 2, name: 'Jane Doe'},
   ])
 }
+
+const getRandomId = (min = 1, max = 100) =>
+  Math.floor(Math.random() * (max - min + 1)) + min
+
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  if (!body.name) {
+    return NextResponse.json({error: 'Name is required'}, {status: 400})
+  }
+
+  return NextResponse.json({id: getRandomId(), name: body.name}, {status: 201})
+}
