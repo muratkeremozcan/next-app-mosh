@@ -1192,3 +1192,120 @@ export async function POST(request: NextRequest) {
 }
 ```
 
+### Zod
+
+In the above for object crud, we have too many if statements for handling the shape of objects, which is called manual schema validation. Instead we can use a validation library such as Zod.
+
+Previously we had our User type:
+
+```ts
+// ./app/users/types.ts
+export type User = {
+  id: number
+  name: string
+  email: string
+}
+```
+
+We can use the same type, but this time with schema validation of Zod. Think of schema like a more detailed specification of the type definition.
+
+```ts
+// ./app/users/schema.ts
+
+import {z} from 'zod'
+
+export const UserSchema = z.object({
+  name: z.string().min(3),
+  email: z.string().email(),
+  id: z.number().optional(),
+})
+
+export type User = z.infer<typeof UserSchema>
+```
+
+After that, in our functions, we can do better validation with `schema.safeParse(...)` and `.success`.
+
+```ts
+// ./app/api/users/[id]/route.tsx
+
+import {UserSchema} from 'app/users/schema'
+import {NextResponse, type NextRequest} from 'next/server'
+
+type Props = {
+  params: {
+    id: number
+  }
+}
+
+export function GET(request: NextRequest, {params: {id}}: Props) {
+  if (id > 10) return NextResponse.json({error: 'User not found'})
+
+  return NextResponse.json({id: 1, name: 'Murat'})
+}
+
+export async function PUT(request: NextRequest, {params: {id}}: Props) {
+  const body = await request.json()
+
+  // better validation with Zod
+  const validation = UserSchema.safeParse(body)
+  if (!validation.success) {
+    return NextResponse.json(validation.error.errors, {status: 400})
+  }
+  // used to be manual validation, like this
+  // if (!body.name) {
+  //   return NextResponse.json({error: 'Name is required'}, {status: 400})
+  // }
+
+  if (id > 10)
+    return NextResponse.json({error: 'User not found'}, {status: 404})
+
+  return NextResponse.json({id: Number(id), name: body.name})
+}
+
+export async function DELETE(request: NextRequest, {params: {id}}: Props) {
+  if (id > 10)
+    return NextResponse.json({error: 'User not found'}, {status: 404})
+
+  return NextResponse.json({})
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

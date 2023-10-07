@@ -1,6 +1,6 @@
 // 'use server' // Cannot find module 'react-server-dom-webpack/client' https://github.com/cypress-io/cypress/issues/27890
 import {Suspense} from 'react'
-import type {User} from './types'
+import type {User} from './schema'
 import UsersTable from './UsersTable'
 import Link from 'next/link'
 
