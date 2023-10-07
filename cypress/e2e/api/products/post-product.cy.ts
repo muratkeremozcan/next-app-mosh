@@ -1,26 +1,26 @@
 import spok from 'cy-spok'
 
-describe('POST user', () => {
-  it('should post user', () => {
-    const body = {name: 'Murat', email: 'ast@gmail.com'}
-    const {name, email} = body
+describe('POST product', () => {
+  it('should post product', () => {
+    const body = {name: 'Milk', price: 5}
+    const {name, price} = body
 
     cy.api({
       method: 'POST',
-      url: '/api/users',
+      url: '/api/products',
       body,
     })
       .should(spok({status: 201}))
       .its('body')
-      .should(spok({id: spok.number, name, email}))
+      .should(spok({id: spok.number, name, price}))
   })
 
-  it('should post an invalid user', () => {
+  it.only('should post an invalid product', () => {
     const body = {name: ''}
 
     cy.api({
       method: 'POST',
-      url: '/api/users',
+      url: '/api/products',
       body,
       failOnStatusCode: false,
     })
@@ -30,18 +30,18 @@ describe('POST user', () => {
         spok([
           {
             code: 'too_small',
-            minimum: 3,
+            minimum: 2,
             type: 'string',
             inclusive: true,
             exact: false,
-            message: 'String must contain at least 3 character(s)',
+            message: 'String must contain at least 2 character(s)',
             path: ['name'],
           },
           {
             code: 'invalid_type',
-            expected: 'string',
+            expected: 'number',
             received: 'undefined',
-            path: ['email'],
+            path: ['price'],
             message: 'Required',
           },
         ]),
