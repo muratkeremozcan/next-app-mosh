@@ -1040,7 +1040,7 @@ But, we cannot capture errors that happen in the `RootLayout` file with `error-t
 
 The convention is to use a folder named `api` for backend. You cannot have `page.tsx` and `route.ts` in the same folder. `route.ts` files are where we handle requests.
 
-The main idea here is that routes like PUT, DELETE, and sometimes GET need an id, and go to a certain route. Routes like POST, and sometimes GET, hit a generic route. Based on that wide-spread fact, Next.js houses the routes in certain route folders.
+The main idea here is that in route files we have route handlers like PUT, DELETE, and sometimes GET need an id, and go to a certain route. Route handlers like POST, and sometimes GET, hit a generic route. Based on that wide-spread fact, Next.js houses the routes in certain route folders.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/0kpoovv16zw7p79jik21.png)
 
@@ -1060,6 +1060,18 @@ export function GET(request: NextRequest) {
 ```
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x16hkm4629lywdok2i09.png)
+
+> 200 (for success)
+>
+> 201 (when a resource is created)
+>
+> 400 (indicating a bad request) 
+>
+> 404 (if something is not found,
+>
+> 500 (for internal server errors)
+>
+>  PUT is intended for replacing objects, while PATCH is intended for updating one or more properties.
 
 ### Getting a single object
 
@@ -1193,6 +1205,8 @@ export async function POST(request: NextRequest) {
 ```
 
 ### Zod
+
+We should always validate objects sent by clients. We can validate objects using simple if statements but as our applications get more complex, we may end up with complex and nested if statements.
 
 In the above for object crud, we have too many if statements for handling the shape of objects, which is called manual schema validation. Instead we can use a validation library such as Zod.
 
