@@ -1,31 +1,24 @@
 import {NextResponse, type NextRequest} from 'next/server'
-import {UserSchema} from 'app/api/users/schema'
+import {ProductSchema} from 'app/api/products/schema'
 import {getRandomId} from '../util'
 
 // need to have an argument (although not used) to prevent NextJs caching the result
 // which would be fine, really, because the result is always the same...
 export function GET(request: NextRequest) {
   return NextResponse.json([
-    {id: 1, name: 'John Doe'},
-    {id: 2, name: 'Jane Doe'},
+    {id: 1, name: 'Milk', price: 2.5},
+    {id: 2, name: 'Bread', price: 3.5},
   ])
 }
 
 export async function POST(request: NextRequest) {
   const body = await request.json()
-  const {name, email} = body
+  const {name, price} = body
 
-  const validation = UserSchema.safeParse(body)
+  const validation = ProductSchema.safeParse(body)
   if (!validation.success) {
     return NextResponse.json(validation.error.errors, {status: 400})
   }
-  // used to be manual validation, like this
-  // if (!body.name) {
-  //   return NextResponse.json({error: 'Name is required'}, {status: 400})
-  // }
-  // if (!body.email) {
-  //   return NextResponse.json({error: 'Email is required'}, {status: 400})
-  // }
 
-  return NextResponse.json({id: getRandomId(), name, email}, {status: 201})
+  return NextResponse.json({id: getRandomId(), name, price}, {status: 201})
 }

@@ -3,7 +3,7 @@
 // so we take advantage of server component benefits:
 // smaller bundle, resource efficient, SEO, more secure
 import Link from 'next/link'
-import type {User} from './schema'
+import type {User} from '../api/users/schema'
 import {sort} from 'fast-sort'
 
 type UsersTableProps = {
