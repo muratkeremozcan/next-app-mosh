@@ -1,4 +1,5 @@
 import {NextResponse, type NextRequest} from 'next/server'
+import {UserSchema} from 'app/users/schema'
 
 // need to have an argument (although not used) to prevent NextJs caching the result
 // which would be fine, really, because the result is always the same...
@@ -14,9 +15,15 @@ const getRandomId = (min = 1, max = 100) =>
 
 export async function POST(request: NextRequest) {
   const body = await request.json()
-  if (!body.name) {
-    return NextResponse.json({error: 'Name is required'}, {status: 400})
+
+  const validation = UserSchema.safeParse(body)
+  if (!validation.success) {
+    return NextResponse.json(validation.error.errors, {status: 400})
   }
+  // used to be manual validation, like this
+  // if (!body.name) {
+  //   return NextResponse.json({error: 'Name is required'}, {status: 400})
+  // }
 
   return NextResponse.json({id: getRandomId(), name: body.name}, {status: 201})
 }
