@@ -1271,6 +1271,43 @@ export async function DELETE(request: NextRequest, {params: {id}}: Props) {
 
 ## DB integration with Prisma
 
+### What is Prisma for?
+
+Prisma is an open-source database toolkit that includes:
+
+1. **Prisma Client**: An auto-generated query builder used to access databases in a type-safe manner.
+2. **Prisma Migrate**: A declarative data modeling and migration system.
+3. **Prisma Studio**: A modern GUI to view and edit your database records.
+4. **Prisma Schema**: A central source of truth for your database schema, from which the Prisma Client API and database migrations are derived.
+
+Prisma offers the following benefits:
+
+- **Type Safety**: Prisma Client integrates with TypeScript and Flow, providing a level of type safety when querying the database.
+  
+- **Auto-Generated Client**: Instead of writing raw SQL or using an ORM's custom query language, developers can use the auto-generated Prisma Client to compose queries.
+  
+- **Declarative Migrations**: Prisma Migrate allows developers to define their database schema in the Prisma schema language, and migrations are generated from changes to this schema, making it easier to evolve the database over time.
+  
+- **Modern Tooling**: With tools like Prisma Studio, developers get a powerful database GUI right out of the box.
+
+### What did people do before Prisma?
+
+Before Prisma and similar tools, developers relied on various strategies and tools to interact with databases:
+
+1. **Raw SQL Queries**: Developers often wrote plain SQL queries to interact with the database, which can be error-prone without careful management and can lack type safety in application code.
+
+2. **ORMs (Object-Relational Mappings)**: ORMs like Sequelize (Node.js), Hibernate (Java), and ActiveRecord (Ruby on Rails) allowed developers to interact with their databases using objects in their respective programming languages. These ORMs can abstract away some of the database complexities but can also come with their own set of challenges, such as performance issues, a steep learning curve, or inflexibility with complex queries.
+
+3. **Database GUI Tools**: Before Prisma Studio, developers used standalone tools like MySQL Workbench, pgAdmin, or DBeaver to visually inspect and manage their databases.
+
+4. **Migration Tools**: Tools like Flyway, Liquibase, and the migration systems integrated into ORMs were used to manage changes to the database schema over time.
+
+5. **Database Drivers**: Most programming languages had libraries or drivers that facilitated direct connections to databases (e.g., `pg` for PostgreSQL in Node.js).
+
+6. **Custom Abstractions**: Some teams or projects built custom abstractions or layers on top of SQL or their database drivers to make database interactions more consistent or developer-friendly.
+
+In summary, before tools like Prisma, developers relied on a mix of ORMs, raw SQL, custom abstractions, and standalone database tools to interact with their databases. Prisma aims to provide a unified, type-safe, and developer-friendly toolkit that encompasses many of these functionalities.
+
 ### Prerequisites & setup
 
 > Prerequisite: Install [MySQL community version](https://dev.mysql.com/downloads/mysql/) and DB viewer ([JetBrains DataGrip 30 day trial](https://www.jetbrains.com/datagrip/)) 
@@ -1342,31 +1379,159 @@ model Product {
 
 ### Creating migrations
 
+As you design or modify your application's models within the Prisma schema, you'll need to create migrations to reflect these changes in the actual database. 
+
+Migrations are sets of instructions that tell the database how to transform its schema from one state to another, ensuring your database schema remains in sync with your Prisma schema.
+
+Here's a more detailed breakdown of the migration process with Prisma:
+
+1. **Define or Modify Models**: Start by designing or changing your models within the Prisma schema (`schema.prisma`).
+2. **Generate a New Migration**: Using the Prisma CLI with the `prisma migrate dev` command, Prisma will compare the current state of the database with your newly defined or modified models. It then generates a new migration, which is essentially a SQL script that captures the necessary changes to transition the database schema to match the Prisma schema.
+3. **Migration Files**: This generated SQL script is saved in a `migration.sql` file within a timestamped folder under the `prisma/migrations` directory. Each migration has its own folder, allowing you to keep a historical record of all changes made to the database over time.
+4. **Apply Migrations**: When you're ready, you can apply these migrations to the actual database, either during development with `prisma migrate dev` or in production with `prisma migrate deploy`. This will execute the SQL statements in the migration files, updating the database schema to match the Prisma schema.
+
+In essence, migrations serve as a bridge, ensuring that changes made in your Prisma schema are accurately and safely reflected in your database. This ensures consistency between your application's data model and the underlying database structure.
+
+```bash
+# start sql server
+sudo /usr/local/mysql/bin/mysqld_safe
+
+# on another tab
+npx prisma migrate dev
+
+# enter a name for the migration
+initial
+```
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/f3h621u313ni5fahdmrp.png)
+
+That gets a sql file created, which has instructions for creating a db table.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/c8kbdk9nzk8rj2wrilj1.png)
+
+```sql
+-- CreateTable
+CREATE TABLE `User` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `followers` INTEGER NOT NULL DEFAULT 0,
+    `isActive` BOOLEAN NOT NULL DEFAULT true,
+
+    UNIQUE INDEX `User_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Product` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `price` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
 
 
+If we browse our database, we will see a table called user
 
+At DataGrip (or any other DB browser):
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/p77jb4o8l9iuksxdiiez.png)
 
+We used `next app` as the db name in the .`env` file, we also set the user and password there, so replicate those values here:
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/iz9axfljpc3rx62upfqp.png)
 
+Initially you need to download the missing drivers, so hit that button and Test the connection. It should just connect.
 
+Create an item in the database for User and submit it
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/5fnmacorllzpxvmlvwe1.png)
 
+Now, let's modify our Prisma schema with createdAt field.
 
+```ts
+// ./prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
 
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
 
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  followers Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
 
+model Product {
+  id        Int      @id @default(autoincrement()) 
+  name      String
+  price     Int
+  createdAt DateTime @default(now())
+}
+```
 
+After that change, migrate the database one more time with `npx prisma migrate dev` and give the migration a name like `add registered-at.
 
+A new folder and file gets created for the migration
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x4wg5dsatpkriimjs5gl.png)
 
+Once we refresh the DB browser, we will see the field `createdAt` get added for the entity, even to the items already existing in the DB.
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/uzq7sp2n2lo9by3facax.png)
 
+### Creating a Prisma client
 
+To work with our db, we need to create a prisma client. 
 
+**Prisma Client**: An auto-generated query builder used to access databases in a type-safe manner.
 
+> Prisma client is always in sync with our db models.
+>
+> We can create the Prisma client anywhere in our app, but we want to make sure there is always at most 1 instance of it running; a singleton.
 
+```ts
+// ./prisma/client.ts
 
+import {PrismaClient} from '@prisma/client'
 
+const prisma = new PrismaClient()
+
+export default prisma
+
+```
+
+In Next.js, development mode, any time we change our source code, our modules get refreshed (hot module reloading), this end up in too many Prisma clients. We need to use the workaround for Next.js from their docs https://www.prisma.io/docs/guides/other/troubleshooting-orm/help-articles/nextjs-prisma-client-dev-practices.
+
+```ts
+// ./prisma/client.ts
+
+import {PrismaClient} from '@prisma/client'
+
+const prismaClientSingleton = () => {
+  return new PrismaClient()
+}
+
+type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClientSingleton | undefined
+}
+
+const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
+
+export default prisma
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+```
 
