@@ -1271,6 +1271,37 @@ export async function DELETE(request: NextRequest, {params: {id}}: Props) {
 
 ## DB integration with Prisma
 
+To connect our applications to a database, we often use an Object-relational Mapper (ORM). An ORM is a tool that sits between a database and an application. It’s responsible for mapping database records to objects in an application. Prisma is the most widely-used ORM for Next.js (or Node.js) applications.
+
+1. **Define Models**: To use Prisma, first we have to define our data models. These are entities that represent our application domain, such as User, Order, Customer, etc. Each model has one or more fields (or properties).
+
+​	`npx prisma init` , and then at `./prisma/schema.prisma` create your models.
+
+2. **Create migration file**: Once we create a model, we use Prisma CLI to create a migration file. A migration file contains instructions to generate or update database tables to match our models. These instructions are in SQL language, which is the language database engines understand. 
+
+​	`npx prisma migrate dev`
+
+3. **Create a Prisma client**: To connect with a database, we create an instance of PrismaClient. This client object gets automatically generated whenever we create a new migration. It exposes properties that represent our models (eg user). 
+
+​	At `./prisma/client.ts` copy paste this code
+```ts
+import {PrismaClient} from '@prisma/client'
+
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: ['query'],
+  })
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+```
+
+
+
 ### What is Prisma for?
 
 Prisma is an open-source database toolkit that includes:
@@ -1339,7 +1370,7 @@ datasource db {
 }
 ```
 
-### Defining Models
+### 1. Defining Models
 
 We need to define the models for our entities (User & Product) at `schema.prisma` file.
 
@@ -1377,7 +1408,7 @@ model Product {
 >
 > More examples at https://www.prisma.io/docs/concepts/components/prisma-schema/data-model.
 
-### Creating migrations
+### 2. Creating migrations
 
 As you design or modify your application's models within the Prisma schema, you'll need to create migrations to reflect these changes in the actual database. 
 
@@ -1432,8 +1463,6 @@ CREATE TABLE `Product` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-
-
 If we browse our database, we will see a table called user
 
 At DataGrip (or any other DB browser):
@@ -1474,7 +1503,7 @@ model User {
 
 model Product {
   id        Int      @id @default(autoincrement()) 
-  name      String
+  name      String   @unique
   price     Int
   createdAt DateTime @default(now())
 }
@@ -1490,7 +1519,7 @@ Once we refresh the DB browser, we will see the field `createdAt` get added for 
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/uzq7sp2n2lo9by3facax.png)
 
-### Creating a Prisma client
+### 3. Creating a Prisma client
 
 To work with our db, we need to create a prisma client. 
 
@@ -1503,12 +1532,13 @@ To work with our db, we need to create a prisma client.
 ```ts
 // ./prisma/client.ts
 
+// this code will not work in Next.js
+
 import {PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 export default prisma
-
 ```
 
 In Next.js, development mode, any time we change our source code, our modules get refreshed (hot module reloading), this end up in too many Prisma clients. We need to use the workaround for Next.js from their docs https://www.prisma.io/docs/guides/other/troubleshooting-orm/help-articles/nextjs-prisma-client-dev-practices.
@@ -1518,24 +1548,22 @@ In Next.js, development mode, any time we change our source code, our modules ge
 
 import {PrismaClient} from '@prisma/client'
 
-const prismaClientSingleton = () => {
-  return new PrismaClient()
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient | undefined
 }
 
-type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClientSingleton | undefined
-}
-
-export const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: ['query'],
+  })
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ```
 
 _________________
 
-At this point I switched to sqlite, so that I don't have to deal with CI headache for mysql.
+At this point I switched to sqlite, so that I don't have to deal with CI headache for mysql. I am also checking in dev.db so that other ppl who pull the repo don't have to deal with the DB
 
 Deleted the `./prisma` folder, then initialized sqlite.
 
@@ -1587,10 +1615,211 @@ Did the migration:
 npx prisma migrate dev --name init
 ```
 
-Gitignored the dev.db file:
-```
-dev.db*
+### CRUD entities
+
+The main idea here is to use prisma to interact with our DB.
+
+```ts
+await prisma.user.findMany()
+await prisma.user.findUnique({ where: { email: 'a' } })
+await prisma.user.create({ data: { name: 'a', email: 'b'} })
+await prisma.user.update({ data: { email: 'c'}, where: { email: 'b'} })
+await prisma.user.delete({ where: { email: 'b'} })
 ```
 
-### Getting data
+```ts
+// ./app/api/users/route.ts
+
+import {NextResponse, type NextRequest} from 'next/server'
+import {UserSchema} from 'app/api/users/schema'
+import {prisma} from '@/prisma/client'
+import type {User} from '@/app/api/users/schema'
+
+// need to have an argument (although not used) to prevent NextJs caching the result
+export async function GET(request: NextRequest) {
+  const users: User[] = await prisma.user.findMany()
+
+  return NextResponse.json(users, {status: 200})
+}
+
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const {name, email}: User = body
+
+  const validation = UserSchema.safeParse(body)
+  if (!validation.success) {
+    return NextResponse.json(validation.error.errors, {status: 400})
+  }
+
+  // what do we do if the user already exists?
+  const userExists = await prisma.user.findUnique({where: {email}})
+  if (userExists)
+    return NextResponse.json({error: 'User already exists.'}, {status: 400})
+
+  const user = await prisma.user.create({data: {name, email}})
+
+  return NextResponse.json(user, {status: 201})
+}
+```
+
+```ts
+// ./app/api/users/[id]/route.tsx
+
+import {UserSchema} from 'app/api/users/schema'
+import {NextResponse, type NextRequest} from 'next/server'
+import {prisma} from '@/prisma/client'
+import type {User} from '@/app/api/users/schema'
+
+type Props = {
+  params: {
+    id: string
+  }
+}
+
+export async function GET(request: NextRequest, {params: {id}}: Props) {
+  const user: User | null = await prisma.user.findUnique({
+    where: {id: Number(id)},
+  })
+
+  if (!user) return NextResponse.json({error: 'User not found'})
+
+  return NextResponse.json(user, {status: 200})
+}
+
+const userExists = (id: string) =>
+  prisma.user.findUnique({where: {id: Number(id)}})
+
+export async function PUT(request: NextRequest, {params: {id}}: Props) {
+  const body: User = await request.json()
+  const {name, email} = body
+
+  // better validation with Zod
+  const validation = UserSchema.safeParse(body)
+  if (!validation.success) {
+    return NextResponse.json(validation.error.errors, {status: 400})
+  }
+
+  if (!(await userExists(id)))
+    return NextResponse.json({error: 'The user does not exist.'}, {status: 404})
+
+  const updatedUser = await prisma.user.update({
+    where: {id: Number(id)},
+    data: {name, email},
+  })
+
+  return NextResponse.json(updatedUser, {status: 200})
+}
+
+export async function DELETE(request: NextRequest, {params: {id}}: Props) {
+  if (!(await userExists(id)))
+    return NextResponse.json({error: 'The user does not exist.'}, {status: 404})
+
+  const deletedUser = await prisma.user.delete({where: {id: Number(id)}})
+
+  return NextResponse.json(deletedUser)
+}
+
+```
+
+```ts
+// ./app/api/products/route.ts
+
+import {NextResponse, type NextRequest} from 'next/server'
+import {ProductSchema} from 'app/api/products/schema'
+import {prisma} from '@/prisma/client'
+import type {Product} from '@/app/api/products/schema'
+
+// need to have an argument (although not used) to prevent NextJs caching the result
+export async function GET(request: NextRequest) {
+  const products = await prisma.product.findMany()
+
+  return NextResponse.json(products, {status: 200})
+}
+
+export async function POST(request: NextRequest) {
+  const body = await request.json()
+  const {name, price}: Product = body
+
+  const validation = ProductSchema.safeParse(body)
+  if (!validation.success) {
+    return NextResponse.json(validation.error.errors, {status: 400})
+  }
+
+  const productExists = await prisma.product.findUnique({where: {name}})
+  if (productExists)
+    return NextResponse.json({error: 'Product already exists.'}, {status: 400})
+
+  const product = await prisma.product.create({data: {name, price}})
+
+  return NextResponse.json(product, {status: 201})
+}
+```
+
+```ts
+// ./app/api/products/[id]/route.tsx
+
+import {ProductSchema} from 'app/api/products/schema'
+import {NextResponse, type NextRequest} from 'next/server'
+import {prisma} from '@/prisma/client'
+import type {Product} from '@/app/api/products/schema'
+
+type Props = {
+  params: {
+    id: string
+  }
+}
+
+const productExists = (id: string) =>
+  prisma.product.findUnique({
+    where: {id: Number(id)},
+  })
+export async function GET(request: NextRequest, {params: {id}}: Props) {
+  const product: Product | null = await prisma.product.findUnique({
+    where: {id: Number(id)},
+  })
+
+  if (!product) return NextResponse.json({error: 'Product not found'})
+
+  return NextResponse.json(product, {status: 200})
+}
+
+export async function PUT(request: NextRequest, {params: {id}}: Props) {
+  const body: Product = await request.json()
+  const {name, price} = body
+
+  // better validation with Zod
+  const validation = ProductSchema.safeParse(body)
+  if (!validation.success) {
+    return NextResponse.json(validation.error.errors, {status: 400})
+  }
+
+  if (!(await productExists(id)))
+    return NextResponse.json(
+      {error: 'The product does not exist.'},
+      {status: 404},
+    )
+
+  const updatedProduct = await prisma.product.update({
+    where: {id: Number(id)},
+    data: {name, price},
+  })
+
+  return NextResponse.json(updatedProduct, {status: 200})
+}
+
+export async function DELETE(request: NextRequest, {params: {id}}: Props) {
+  if (!(await productExists(id)))
+    return NextResponse.json(
+      {error: 'The product does not exist.'},
+      {status: 404},
+    )
+
+  const deletedProduct = await prisma.product.delete({
+    where: {id: Number(id)},
+  })
+
+  return NextResponse.json(deletedProduct)
+}
+
+```
 
