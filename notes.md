@@ -1528,10 +1528,69 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClientSingleton | undefined
 }
 
-const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
-
-export default prisma
+export const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ```
+
+_________________
+
+At this point I switched to sqlite, so that I don't have to deal with CI headache for mysql.
+
+Deleted the `./prisma` folder, then initialized sqlite.
+
+
+```bash
+npx prisma init --datasource-provider sqlite
+```
+
+Set the `./prisma/schema.prisma` fie like before, replacing mysql with sqlite
+
+```ts
+// ./prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  followers Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id        Int      @id @default(autoincrement()) 
+  name      String   @unique
+  price     Int
+  createdAt DateTime @default(now())
+}
+```
+
+Updated `.env` file like so:
+
+```
+DATABASE_URL="file:./dev.db"
+```
+
+Did the migration:
+
+```
+npx prisma migrate dev --name init
+```
+
+Gitignored the dev.db file:
+```
+dev.db*
+```
+
+### Getting data
 

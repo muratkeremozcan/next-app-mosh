@@ -1,20 +1,30 @@
 import {UserSchema} from 'app/api/users/schema'
 import {NextResponse, type NextRequest} from 'next/server'
+import {prisma} from '@/prisma/client'
+import type {User} from '@/app/api/users/schema'
 
 type Props = {
   params: {
-    id: number
+    id: string
   }
 }
 
-export function GET(request: NextRequest, {params: {id}}: Props) {
-  if (id > 10) return NextResponse.json({error: 'User not found'})
+export async function GET(request: NextRequest, {params: {id}}: Props) {
+  const user: User | null = await prisma.user.findUnique({
+    where: {id: Number(id)},
+  })
 
-  return NextResponse.json({id: 1, name: 'Murat'})
+  if (!user) return NextResponse.json({error: 'User not found'})
+
+  return NextResponse.json(user, {status: 200})
 }
 
+const userExists = (id: string) =>
+  prisma.user.findUnique({where: {id: Number(id)}})
+
 export async function PUT(request: NextRequest, {params: {id}}: Props) {
-  const body = await request.json()
+  const body: User = await request.json()
+  const {name, email} = body
 
   // better validation with Zod
   const validation = UserSchema.safeParse(body)
@@ -29,15 +39,22 @@ export async function PUT(request: NextRequest, {params: {id}}: Props) {
   //   return NextResponse.json({error: 'Price is required'}, {status: 400})
   // }
 
-  if (id > 10)
-    return NextResponse.json({error: 'User not found'}, {status: 404})
+  if (!(await userExists(id)))
+    return NextResponse.json({error: 'The user does not exist.'}, {status: 404})
 
-  return NextResponse.json({id: Number(id), name: body.name})
+  const updatedUser = await prisma.user.update({
+    where: {id: Number(id)},
+    data: {name, email},
+  })
+
+  return NextResponse.json(updatedUser, {status: 200})
 }
 
 export async function DELETE(request: NextRequest, {params: {id}}: Props) {
-  if (id > 10)
-    return NextResponse.json({error: 'User not found'}, {status: 404})
+  if (!(await userExists(id)))
+    return NextResponse.json({error: 'The user does not exist.'}, {status: 404})
 
-  return NextResponse.json({})
+  const deletedUser = await prisma.user.delete({where: {id: Number(id)}})
+
+  return NextResponse.json(deletedUser)
 }

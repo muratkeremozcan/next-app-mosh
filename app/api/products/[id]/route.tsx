@@ -1,20 +1,31 @@
 import {ProductSchema} from 'app/api/products/schema'
 import {NextResponse, type NextRequest} from 'next/server'
+import {prisma} from '@/prisma/client'
+import type {Product} from '@/app/api/products/schema'
 
 type Props = {
   params: {
-    id: number
+    id: string
   }
 }
 
-export function GET(request: NextRequest, {params: {id}}: Props) {
-  if (id > 10) return NextResponse.json({error: 'Product not found'})
+const productExists = (id: string) =>
+  prisma.product.findUnique({
+    where: {id: Number(id)},
+  })
+export async function GET(request: NextRequest, {params: {id}}: Props) {
+  const product: Product | null = await prisma.product.findUnique({
+    where: {id: Number(id)},
+  })
 
-  return NextResponse.json({id: 1, name: 'Milk'})
+  if (!product) return NextResponse.json({error: 'Product not found'})
+
+  return NextResponse.json(product, {status: 200})
 }
 
 export async function PUT(request: NextRequest, {params: {id}}: Props) {
-  const body = await request.json()
+  const body: Product = await request.json()
+  const {name, price} = body
 
   // better validation with Zod
   const validation = ProductSchema.safeParse(body)
@@ -30,15 +41,30 @@ export async function PUT(request: NextRequest, {params: {id}}: Props) {
   //   return NextResponse.json({error: 'Price is required'}, {status: 400})
   // }
 
-  if (id > 10)
-    return NextResponse.json({error: 'Product not found'}, {status: 404})
+  if (!(await productExists(id)))
+    return NextResponse.json(
+      {error: 'The product does not exist.'},
+      {status: 404},
+    )
 
-  return NextResponse.json({id: Number(id), name: body.name})
+  const updatedProduct = await prisma.product.update({
+    where: {id: Number(id)},
+    data: {name, price},
+  })
+
+  return NextResponse.json(updatedProduct, {status: 200})
 }
 
 export async function DELETE(request: NextRequest, {params: {id}}: Props) {
-  if (id > 10)
-    return NextResponse.json({error: 'Product not found'}, {status: 404})
+  if (!(await productExists(id)))
+    return NextResponse.json(
+      {error: 'The product does not exist.'},
+      {status: 404},
+    )
 
-  return NextResponse.json({})
+  const deletedProduct = await prisma.product.delete({
+    where: {id: Number(id)},
+  })
+
+  return NextResponse.json(deletedProduct)
 }
