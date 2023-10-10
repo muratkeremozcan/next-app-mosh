@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type {MountOptions, MountReturn} from 'cypress/react'
+import type {User} from '@/app/api/users/schema'
 
 export {}
 declare global {
@@ -39,6 +40,65 @@ declare global {
         component: React.ReactNode,
         options?: MountOptions,
       ): Cypress.Chainable<MountReturn>
+
+      /** Creates a random user with name and email */
+      createUser(
+        body?: Partial<User>,
+        allowedToFail?: boolean,
+      ): Chainable<Response<User> & Messages>
+
+      /** Gets a user by id */
+      getUser(
+        id: string,
+        failOnStatusCode?: boolean,
+      ): Chainable<Response<User> & Messages>
+
+      /** Gets all users */
+      getUsers(
+        failOnStatusCode?: boolean,
+      ): Chainable<Response<User[]> & Messages>
+
+      /** Deletes a user by id */
+      deleteUser(
+        id: string,
+        allowedToFail?: boolean,
+      ): Chainable<Response<User> & Messages>
+
+      /** Updates a user by id */
+      updateUser(
+        id: string,
+        body: Partial<User>,
+        allowedToFail?: boolean,
+      ): Chainable<Response<User> & Messages>
+
+      /** Creates a random product with name and email */
+      createProduct(
+        body?: Partial<Product>,
+        allowedToFail?: boolean,
+      ): Chainable<Response<unknown> & Messages>
+
+      /** Gets a product by id */
+      getProduct(
+        id: string,
+        failOnStatusCode?: boolean,
+      ): Chainable<Response<unknown> & Messages>
+
+      getProducts(
+        failOnStatusCode?: boolean,
+      ): Chainable<Response<Product[]> & Messages>
+
+      /** Deletes a product by id */
+      deleteProduct(
+        id: string,
+        allowedToFail?: boolean,
+      ): Chainable<Response<unknown> & Messages>
+
+      /** Updates a product by id */
+      updateProduct(
+        id: string,
+        body: Partial<Product>,
+        allowedToFail?: boolean,
+      ): Chainable<Response<unknown> & Messages>
     }
   }
 }
