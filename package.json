@@ -18,7 +18,9 @@
   },
   "dependencies": {
     "autoprefixer": "10.4.16",
+    "cypress-iframe": "^1.0.1",
     "next": "13.5.2",
+    "next-cloudinary": "^4.24.0",
     "postcss": "8.4.30",
     "react": "18.2.0",
     "react-dom": "18.2.0",

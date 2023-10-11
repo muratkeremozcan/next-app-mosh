@@ -1823,3 +1823,124 @@ export async function DELETE(request: NextRequest, {params: {id}}: Props) {
 
 ```
 
+## Uploading files
+
+To store the files we can use a cloud platform. We are using Cloudinary here (an alternative to AWS S3, Google Cloud & Microsoft Azure), because it has easier integration with Next.js. Register with a free account
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3yaap2i5urxy7kdw5j7f.png)
+
+Add the cloud name (bottom left) to the .env file
+```
+DATABASE_URL="file:./dev.db"
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
+```
+
+```bash
+npm i next-cloudinary
+```
+
+This lib has a bunch of React components we can use easily.
+
+Take a look at the docs https://next.cloudinary.dev/clduploadwidget/basic-usage , we will use the upload widget and copy paste it in.
+
+We need a value for `uploadPreset`. We get that at Cloudinary > Settings (gear icon) > Add upload preset:
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/08g7535ojqpbu24y00kj.png)
+
+Copy the upload preset name, set signing mode unsigned (easier) and leave everything else default.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2py0l4xtb5mkuj2upupu.png)
+
+The `CldUploadWidget` wants a function as a child, and that function takes many optional arguments, one of them is `open` which we use for click handler. Since we have a click event, this one has to be client component.
+
+```tsx
+// ./app/upload/page.tsx
+
+'use client'
+import {CldUploadWidget} from 'next-cloudinary'
+
+export default function UploadPage() {
+  return (
+    <CldUploadWidget uploadPreset="o3jqdvra">
+      {({open}) => (
+        <button className="btn btn-primary" onClick={() => open()}>
+          Upload an Image
+        </button>
+      )}
+    </CldUploadWidget>
+  )
+}
+```
+
+We can view the uploaded assets at Media library.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yo810iholkp9m6l31o2g.png)
+
+In order to display the uploaded image, we use the `CldImage` component, and only display it after upload if the upload was successful, utilizing the publicId state variable we created.
+
+```tsx
+// ./app/upload/page.tsx
+
+'use client'
+import {useState} from 'react'
+import {CldUploadWidget, CldImage} from 'next-cloudinary'
+
+export default function UploadPage() {
+  const [publicId, setPublicId] = useState('')
+
+  return (
+    <>
+      {publicId && (
+        <CldImage src={publicId} width={270} height={180} alt="avatar" />
+      )}
+      <CldUploadWidget
+        uploadPreset="o3jqdvra"
+        options={{
+          sources: ['local'],
+          multiple: false,
+        }}
+        onUpload={(result, widget) => {
+          if (result.event !== 'success') return
+          // @ts-expect-error why they don't have types?
+          setPublicId(result.info.public_id)
+        }}
+      >
+        {({open}) => (
+          <button className="btn btn-primary" onClick={() => open()}>
+            Upload an Image
+          </button>
+        )}
+      </CldUploadWidget>
+    </>
+  )
+}
+```
+
+Cloudinary upload cheat sheet:
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qderbdpq465qcv1dq11x.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
