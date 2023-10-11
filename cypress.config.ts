@@ -5,7 +5,7 @@ import tasks from './cypress/support/tasks'
 export default defineConfig({
   // @ts-expect-error - experimentalSingleTabRunMode is not in the type definition
   experimentalSingleTabRunMode: true,
-
+  chromeWebSecurity: false,
   projectId: 'kk89i2',
 
   retries: {
