@@ -1920,27 +1920,131 @@ Cloudinary upload cheat sheet:
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qderbdpq465qcv1dq11x.png)
 
+## Authentication
 
+### Setting up Next AUth
 
+https://next-auth.js.org/providers/  https://authjs.dev/
 
+```bash
+npm i next-auth
+```
 
+Add route handlers:
 
+```tsx
+// ./app/api/auth/[...nextauth]/route.ts
 
+import NextAuth from 'next-auth'
 
+// @ts-expect-error for now
+const handler = NextAuth({})
 
+// any GET or POST will get handled by the NextAuth handler
+export {handler as GET, handler as POST}
 
+```
 
+We need 2 new environment variables. We can generate a random secret with the following in bash:
 
+```bash
+openssl rand -base64 32   
+```
 
+```
+DATABASE_URL="file:./dev.db"
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
+NEXTAUTH_URL="http:localhost:3000"
+NEXTAUTH_SECRET="TbcR4oYsW3c7srouavU4tR++gP9j7JmDzzAFPLL5UNw="
+```
 
+### Configuring Google Provider
 
+Provider: in Next Auth, these are services we can use to sign in a user (Auth0, Okta, Google etc.).
 
+Create a project on Google cloud:
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2yqt57oea0vp5lkyg90r.png)
 
+Configure consent screen, and pick External:
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kv42bdu9yxh4vjeqpk7j.png)
 
+On OAuth consent screen, fill in the app name, user support email and developer email. Leave the rest empty.
 
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/m7z7337tyo28n6q8i65e.png)
 
+On Scopes pick email and profile.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/rf1v1au5x73zifurz66a.png)
+
+Password-1In Test Users, I created an email to use for testing. We can have 100 of these and only they can log in for now.
+
+next.app.mosh@gmail.com Password-1
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zuv59y7rdl236uhqe1eu.png)
+
+Save and go to Dashboard view. After that go to Credentials > Create Credentials > OAuth Client ID
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/75n45fhlwi7ngom09wg8.png)
+
+Choose web app for app type. Give it a name. Add the url, and the redirect url (`/api/auth/callback/google` is from Next Auth docs) .
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/6olmohlzvvt8tmbi8df5.png)
+
+Copy the clientId and secret to the `.env` file.
+```
+DATABASE_URL="file:./dev.db"
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
+NEXTAUTH_URL="http:localhost:3000"
+NEXTAUTH_SECRET="TbcR4oYsW3c7srouavU4tR++gP9j7JmDzzAFPLL5UNw="
+GOOGLE_CLIENT_ID="373837629743-gd9opq4ki0tv8gj0d260rgje8p9jo82l.apps.googleusercontent.com"
+GOOGLE_CLIEN_SECRET="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"
+```
+
+Now we add the `GoogleProvider` to our `route`:
+
+```ts
+// ./app/api/auth/[...nextauth]/route.ts
+
+import NextAuth from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+
+const handler = NextAuth({
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+})
+
+// any GET or POST will get handled by the NextAuth handler
+export {handler as GET, handler as POST}
+```
+
+And finally we can add the sign in link to the `NavBar`. `/api/auth/` is the route we created via the folder structure, `/signin` gets exposed by NextAuth.
+
+```tsx
+import Link from 'next/link'
+import React from 'react'
+
+export default function NavBar() {
+  return (
+    <div className="flex bg-slate-200 p-5 space-x-3">
+      <Link data-cy="navbar-home-link" href="/" className="mr-5">
+        Home
+      </Link>
+      <Link data-cy="navbar-users-link" href="/users" className="mr-5">
+        Users
+      </Link>
+      <Link data-cy="navbar-sing-in" href="/api/auth/signin" className="mr-5">
+        Login
+      </Link>
+    </div>
+  )
+}
+```
 
 
 
