@@ -22,6 +22,7 @@ Cypress.Commands.add('loginByGoogleApi', () => {
     })
     .then(({body}) => {
       const {access_token, id_token} = body
+      console.log({body})
 
       return cy
         .request({
@@ -30,21 +31,31 @@ Cypress.Commands.add('loginByGoogleApi', () => {
           headers: {Authorization: `Bearer ${access_token}`},
         })
         .then(({body}) => {
-          cy.log(body)
-          const userItem = {
-            token: id_token,
-            user: {
-              googleId: body.sub,
-              email: body.email,
-              givenName: body.given_name,
-              familyName: body.family_name,
-              imageUrl: body.picture,
-            },
-          }
+          console.log({body})
+          // this part is from cy docs, probably not needed for next-auth
+          // const userItem = {
+          //   token: id_token,
+          //   user: {
+          //     googleId: body.sub,
+          //     email: body.email,
+          //     givenName: body.given_name,
+          //     familyName: body.family_name,
+          //     imageUrl: body.picture,
+          //   },
+          // }
+          // window.localStorage.setItem('googleCypress', JSON.stringify(userItem))
 
-          window.localStorage.setItem('googleCypress', JSON.stringify(userItem))
+          // cy.setCookie('next-auth.session-token', id_token)
+          // gets set and cleared
 
-          return cy.visit('/')
+          cy.visit('/', {
+            // onLoad: win => {
+            //   // Set the cookie using the browser's document.cookie property
+            //   win.document.cookie = `next-auth.session-token=${id_token}`
+            //   // still gets cleared on visit
+            // },
+          })
+          cy.setCookie('next-auth.session-token', id_token)
         })
     })
 })

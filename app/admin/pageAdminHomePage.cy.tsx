@@ -1,4 +1,3 @@
-import React from 'react'
 import AdminHomePage from './page'
 import AdminLayout from './layout'
 

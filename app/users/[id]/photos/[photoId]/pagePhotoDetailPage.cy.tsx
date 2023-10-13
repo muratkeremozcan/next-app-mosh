@@ -1,4 +1,3 @@
-import React from 'react'
 import PhotoDetailPage from './page'
 
 describe('<PhotoDetailPage />', () => {
