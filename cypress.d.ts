@@ -103,7 +103,12 @@ declare global {
       /**
        * Logs-in user by using Google API request
        */
-      loginByGoogleApi(): Chainable<Response>
+      googleLogin(): Chainable<Response>
+
+      /**
+       * Stubs login via fixture, to get past the auth wall
+       */
+      stubLogin(): void
     }
   }
 }

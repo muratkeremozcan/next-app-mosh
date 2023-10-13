@@ -1,6 +1,6 @@
 import NavBar from './NavBar'
 import {SessionProvider} from 'next-auth/react'
-import * as session from '@fixtures/auth-session.json'
+import session from '@fixtures/auth-session.json'
 
 describe('<NavBar />', () => {
   it('should show loading and Sign in', () => {

@@ -5,8 +5,9 @@
 import './commands'
 import '@bahmutov/cy-api'
 import 'cypress-map'
+import 'cypress-v10-preserve-cookie'
 
-Cypress.Commands.add('loginByGoogleApi', () => {
+Cypress.Commands.add('googleLogin', () => {
   cy.log('Logging in to Google')
 
   return cy
@@ -32,7 +33,9 @@ Cypress.Commands.add('loginByGoogleApi', () => {
         })
         .then(({body}) => {
           console.log({body})
-          // this part is from cy docs, probably not needed for next-auth
+
+          // this part is from cy docs, most likely not needed for next-auth
+          // keeping it around for now...
           // const userItem = {
           //   token: id_token,
           //   user: {
@@ -45,17 +48,34 @@ Cypress.Commands.add('loginByGoogleApi', () => {
           // }
           // window.localStorage.setItem('googleCypress', JSON.stringify(userItem))
 
-          // cy.setCookie('next-auth.session-token', id_token)
-          // gets set and cleared
-
-          cy.visit('/', {
+          cy.setCookie('next-auth.session-token', id_token)
+          // TODO: make this work
+          // not sure if this works, because on visit, the cookie is cleared
+          cy.preserveCookieOnce('next-auth.session-token')
+          cy.visit(
+            '/',
+            //  {
             // onLoad: win => {
             //   // Set the cookie using the browser's document.cookie property
             //   win.document.cookie = `next-auth.session-token=${id_token}`
             //   // still gets cleared on visit
             // },
-          })
-          cy.setCookie('next-auth.session-token', id_token)
+            // }
+          )
         })
     })
+})
+
+Cypress.Commands.add('stubLogin', () => {
+  cy.intercept('/api/auth/session', {fixture: 'auth-session.json'}).as(
+    'session',
+  )
+
+  cy.setCookie(
+    'next-auth.session-token',
+    'a valid cookie from your browser session',
+  )
+  // cy.preserveCookieOnce('next-auth.session-token') // works without this, for now
+  cy.visit('/')
+  cy.wait('@session')
 })

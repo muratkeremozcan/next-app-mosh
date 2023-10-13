@@ -38,6 +38,7 @@
     "cy-spok": "^1.6.2",
     "cypress": "^13.3.0",
     "cypress-map": "^1.21.1",
+    "cypress-v10-preserve-cookie": "^1.2.1",
     "daisyui": "^3.8.1",
     "dotenv": "^16.3.1",
     "eslint": "8.49.0",
