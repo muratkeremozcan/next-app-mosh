@@ -1,9 +1,10 @@
 import {defineConfig} from 'cypress'
 // import plugins from './cypress/support/plugins'
 import tasks from './cypress/support/tasks'
+require('dotenv').config()
 
 export default defineConfig({
-  // @ts-expect-error - experimentalSingleTabRunMode is not in the type definition
+  // @ts-expect-error yes
   experimentalSingleTabRunMode: true,
   chromeWebSecurity: false,
   projectId: 'kk89i2',
@@ -11,6 +12,10 @@ export default defineConfig({
   retries: {
     runMode: 2,
     openMode: 0,
+  },
+
+  env: {
+    ...process.env,
   },
 
   e2e: {

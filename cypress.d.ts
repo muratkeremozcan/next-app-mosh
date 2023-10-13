@@ -99,6 +99,11 @@ declare global {
         body: Partial<Product>,
         allowedToFail?: boolean,
       ): Chainable<Response<unknown> & Messages>
+
+      /**
+       * Logs-in user by using Google API request
+       */
+      loginByGoogleApi(): Chainable<Response>
     }
   }
 }

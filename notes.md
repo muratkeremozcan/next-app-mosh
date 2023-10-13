@@ -1962,6 +1962,16 @@ NEXTAUTH_SECRET="TbcR4oYsW3c7srouavU4tR++gP9j7JmDzzAFPLL5UNw="
 
 Provider: in Next Auth, these are services we can use to sign in a user (Auth0, Okta, Google etc.).
 
+Google has made a creation of an SSO-enabled app pretty easy for developers.. There are a couple of steps to this:
+
+1. Create a OAuth project on [Google developer console](https://console.developers.google.com/)
+2. Set up which domains this application can be used on
+3. Set up where you will be redirected after a user returns from Google login screen
+4. Add a button to your frontend
+5. Add a validation to your backend
+
+
+
 Create a project on Google cloud:
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2yqt57oea0vp5lkyg90r.png)
@@ -1978,7 +1988,7 @@ On Scopes pick email and profile.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/rf1v1au5x73zifurz66a.png)
 
-Password-1In Test Users, I created an email to use for testing. We can have 100 of these and only they can log in for now.
+In Test Users, I created an email to use for testing. We can have 100 of these and only they can log in for now.
 
 next.app.mosh@gmail.com Password-1
 
@@ -1990,9 +2000,11 @@ Save and go to Dashboard view. After that go to Credentials > Create Credentials
 
 Choose web app for app type. Give it a name. Add the url, and the redirect url (`/api/auth/callback/google` is from Next Auth docs) .
 
-![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/6olmohlzvvt8tmbi8df5.png)
+Here, make sure to add `https://developers.google.com/oauthplayground` as a redirect URI, this is needed for testing.
 
-Copy the clientId and secret to the `.env` file.
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/q77cl4qv1h7malrhk4nh.png)
+
+Copy the client Id and client secret to the `.env` file. *client* in this context points to your application, and not the user that is trying to log in to your application.
 ```
 DATABASE_URL="file:./dev.db"
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
@@ -2023,7 +2035,9 @@ const handler = NextAuth({
 export {handler as GET, handler as POST}
 ```
 
-And finally we can add the sign in link to the `NavBar`. `/api/auth/` is the route we created via the folder structure, `/signin` gets exposed by NextAuth.
+And finally we can add the sign in link to the `NavBar`.
+
+`/api/auth` is the route we created via the folder structure, `/signin` gets exposed by NextAuth.
 
 ```tsx
 import Link from 'next/link'
@@ -2046,5 +2060,33 @@ export default function NavBar() {
 }
 ```
 
+###  [OAuth Playground](https://developers.google.com/oauthplayground/) (for testing)
 
+This service will allow you to create a "refresh token". With this token, you can authenticate against Google API. What this means is, that you can access data from your Google account. In most "Google sign in enabled" apps, the data would be things like your profile picture, email, your name, or some other data from your account.
+
+There are many options on this playground, but since we just want to authenticate in our app, we want to choose "Google Oauth API v2".
+
+![Google oauth playground scope](https://res.cloudinary.com/dcnwsgh7c/image/upload/f_auto/q_auto/v1//playground_api.png?_a=BBDAACAD0)
+
+ Not only we want to scope the data that the refresh token will have access to, but we want to scope **where** can this token be used. To use it only in our project, check the "Use your own OAuth credentials" checkbox and enter the **Client ID** and **Client secret**. Remember how I mentioned those?
+
+![Google oauth configuration](https://res.cloudinary.com/dcnwsgh7c/image/upload/f_auto/q_auto/v1//playground_oauth.png?_a=BBDAACAD0)
+
+After setting this up, click the "Authorize API" button and proceed to step 2. You are just click of a button away. Click on "Exchange authorization code for tokens" button and copy the refresh token.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yao87ytqpr5edkstjg16.png)
+
+```
+DATABASE_URL="file:./dev.db"
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
+NEXTAUTH_URL="http:localhost:3000"
+NEXTAUTH_SECRET="TbcR4oYsW3c7srouavU4tR++gP9j7JmDzzAFPLL5UNw="
+GOOGLE_CLIENT_ID="373837629743-gd9opq4ki0tv8gj0d260rgje8p9jo82l.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="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"
+GOOGLE_REFRESH_TOKEN="1//04vwVjlTf_ZFfCgYIARAAGAQSNwF-L9IrpibDCDBouAmLCDemQlgtfUvBRVRZ0HM4dzloDmasF_8en2X5mQEE6sGOPQw9gWBEb18"
+GOOGLE_USER="next.app.mosh@gmail.com",
+GOOGLE_PW="Password-1",
+COOKIE_NAME="next-auth.session-token",
+SITE_NAME="http://localhost:3000"
+```
 
