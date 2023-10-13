@@ -2,26 +2,40 @@
 
 New stuff in Next:
 
-1. **Static Site Generation (SSG):** This allows for a blazing fast performance since pages are generated at build time and served as static files. It can be especially useful for content-driven sites where the data doesn't change frequently.
+1. **Static Site Generation (SSG):** This allows for a blazing fast performance
+   since pages are generated at build time and served as static files. It can be
+   especially useful for content-driven sites where the data doesn't change
+   frequently.
 
-2. **Server-side Rendering (SSR):** Perfect for pages where content changes often or is based on user data. It allows content to be generated on the server at runtime for each request.
+2. **Server-side Rendering (SSR):** Perfect for pages where content changes
+   often or is based on user data. It allows content to be generated on the
+   server at runtime for each request.
 
-3. **API Routes:** With `api/` routes, you can easily build your API endpoints within the Next.js app, making it a seamless integration between your frontend and backend.
+3. **API Routes:** With `api/` routes, you can easily build your API endpoints
+   within the Next.js app, making it a seamless integration between your
+   frontend and backend.
 
-4. **File System-Based Routing:** No need for complicated routing setups. Your file and folder structure directly translate to your app's routes.
+4. **File System-Based Routing:** No need for complicated routing setups. Your
+   file and folder structure directly translate to your app's routes.
 
-5. **Built-in CSS and Sass Support:** With Next.js, you can import CSS directly into your components without additional configurations.
+5. **Built-in CSS and Sass Support:** With Next.js, you can import CSS directly
+   into your components without additional configurations.
 
-6. **Image Optimization:** The `next/image` component allows for automatic optimization of images for faster load times and better performance.
+6. **Image Optimization:** The `next/image` component allows for automatic
+   optimization of images for faster load times and better performance.
 
-7. **Fast Refresh:** Experience near-instant feedback during development. Any changes in your React components reflect instantly without losing component state.
+7. **Fast Refresh:** Experience near-instant feedback during development. Any
+   changes in your React components reflect instantly without losing component
+   state.
 
-8. **TypeScript Support:** If you prefer TypeScript, Next.js provides an out-of-the-box setup to support it.
+8. **TypeScript Support:** If you prefer TypeScript, Next.js provides an
+   out-of-the-box setup to support it.
 
 App routing is setup under `./app`
 
 By default all components in the `./app` folder are server components. If we
-want to make them client components, we insert `'use client'` at the top of the file.
+want to make them client components, we insert `'use client'` at the top of the
+file.
 
 ### Why use server components?
 
@@ -366,21 +380,20 @@ Any folder under app (except `components`) creates a route.
 
 App router looks for special files such to define the routes:
 
-* `page.tsx`
+- `page.tsx`
 
-* `layout.tsx`
+- `layout.tsx`
 
-* `loading.tsx`
+- `loading.tsx`
 
-* `not-found.tsx`
+- `not-found.tsx`
 
-* `error.tsx`
-
-  
+- `error.tsx`
 
 ### Dynamic route (`params`)
 
-A dynamic route is one that takes one or more parameters. To add parameters to our routes, we wrap directory names with square brackets (eg [id])
+A dynamic route is one that takes one or more parameters. To add parameters to
+our routes, we wrap directory names with square brackets (eg [id])
 
 A route with a parameter. The syntax is like so:
 
@@ -509,7 +522,10 @@ export default function ProductPage({
 
 ### Using query-string parameters for managing (server side) state
 
-In standard React applications, we use the state hook for managing component state. In server-rendered applications, however, we use query string parameters to keep state. This also allows us to bookmark our pages in specific state. For example, we can bookmark a filtered and sorted list of products
+In standard React applications, we use the state hook for managing component
+state. In server-rendered applications, however, we use query string parameters
+to keep state. This also allows us to bookmark our pages in specific state. For
+example, we can bookmark a filtered and sorted list of products
 
 Let's say we want to sort users by name or email in the `UsersTable` component.
 
@@ -709,7 +725,8 @@ Layouts are used to create a UI that is shared between multiple pages.
 
 For ex: the `RootLayout` at `./app/layout.tsx` is the common UI for all the app.
 
-We can create additional layouts for specific areas of our application (eg /app/admin/layout.tsx).
+We can create additional layouts for specific areas of our application (eg
+/app/admin/layout.tsx).
 
 Suppose we want a different layout for admin users with a sidebar:
 
@@ -754,7 +771,6 @@ components folder, gut it is only used with `RootLayout` so it is fine at root.
 // ./app/NavBar.tsx
 
 import Link from 'next/link'
-import React from 'react'
 
 export default function NavBar() {
   return (
@@ -800,8 +816,8 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 }
 ```
 
-For further styling at each component, at global styles, we can override the 3 directives on top with `@layer` and
-`@apply`
+For further styling at each component, at global styles, we can override the 3
+directives on top with `@layer` and `@apply`
 
 ```css
 /* ./app/global.css */
@@ -844,16 +860,21 @@ body {
 
   ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/buic7c7jt50me87i906c.png)
 
-- Prefetches the links that are in the viewport, to provide smooth navigation between pages,
-  
+- Prefetches the links that are in the viewport, to provide smooth navigation
+  between pages,
+
   We need to run the app in production mode to see this:
-  
+
   `npm run build && npm start` The sort-by links (name and email) are
   pre-fetched to improve performance.
-  
+
   ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/amju4hvrapm569tqd1e9.png)
-  
-- Caching; as the user moves around our application, Next.js stores the page content in a cache on the client. So, if they revisit a page that already exists in the cache, Next.js simply grabs it from the cache instead of making a new request to the server. The client cache exists in the browser’s memory and lasts for an entire session. It gets reset when we do a full refresh. 
+
+- Caching; as the user moves around our application, Next.js stores the page
+  content in a cache on the client. So, if they revisit a page that already
+  exists in the cache, Next.js simply grabs it from the cache instead of making
+  a new request to the server. The client cache exists in the browser’s memory
+  and lasts for an entire session. It gets reset when we do a full refresh.
 
   Nav to Home and Users, clear Network. Repeat, and network will not get
   anything new, because it is cached. The cache resets on a full page reload.
@@ -888,12 +909,12 @@ export default function NewUserPage() {
 }
 ```
 
-### Showing Loading UIs 
+### Showing Loading UIs
 
 #### React Suspense
 
-We can make use of React's Suspense api, wrapping the component that might be loading data.
-
+We can make use of React's Suspense api, wrapping the component that might be
+loading data.
 
 ```tsx
 // ./app/users/page.tsx
@@ -914,7 +935,7 @@ export default async function UsersPage({
   searchParams: {sortOrder},
 }: UsersPageProps) {
   const res = await fetch('https://jsonplaceholder.typicode.com/users', {
-    cache: 'no-store', 
+    cache: 'no-store',
   })
   const users: User[] = await res.json()
 
@@ -932,17 +953,21 @@ export default async function UsersPage({
 }
 ```
 
-To see it in action, use React dev tools, search for Suspense, and on the right pane click on the clock icon.
+To see it in action, use React dev tools, search for Suspense, and on the right
+pane click on the clock icon.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dei8ngl7v5rma7rbbdkt.png)
 
-If we want to add Suspense to every component, it can be in the `RootLayout` component, wrapping the children or use the special loading file in NextJs.
+If we want to add Suspense to every component, it can be in the `RootLayout`
+component, wrapping the children or use the special loading file in NextJs.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/f96t13rvrjkczaqi7sus.png)
 
 #### Using the `loading.tsx` file
 
-In the case of using `loading.tsx` file, we do not use Suspense. We can place it where we want to loading pages to show. If we put it under app, it will show for everything.
+In the case of using `loading.tsx` file, we do not use Suspense. We can place it
+where we want to loading pages to show. If we put it under app, it will show for
+everything.
 
 We can use https://daisyui.com/components/loading/ from daisyUI
 
@@ -962,7 +987,8 @@ export default function Loading() {
 
 #### Not Found errors (not-found.tsx file)
 
-Similar to the `loading.tsx` file, NextJs has a `not-found.tsx` file we can use. The component gets rendered on a page that doesn't exist.
+Similar to the `loading.tsx` file, NextJs has a `not-found.tsx` file we can use.
+The component gets rendered on a page that doesn't exist.
 
 ```tsx
 // ./app/not-found.tsx
@@ -972,7 +998,8 @@ export default function NotFound() {
 }
 ```
 
-If we want not found pages specific to the routes, we use the built-in notFound() function. This redirects us to the NotFound page above.
+If we want not found pages specific to the routes, we use the built-in
+notFound() function. This redirects us to the NotFound page above.
 
 ```tsx
 // ./app/users/[id]/page.tsx
@@ -992,9 +1019,11 @@ export default function UserDetailPage({params: {id}}: UserDetailsPageProps) {
 }
 ```
 
-If we want to further customize the not found page on the sub routes, we create `not-found.tsx` files in that route.
+If we want to further customize the not found page on the sub routes, we create
+`not-found.tsx` files in that route.
 
-If we do not have this file, it will just show the default not-found.tsx at the app root.
+If we do not have this file, it will just show the default not-found.tsx at the
+app root.
 
 ```tsx
 //./app/users/[id]/not-found.tsx
@@ -1006,7 +1035,8 @@ export default function UserNotFound() {
 
 #### Unexpected errors (error.tsx file)
 
-Similar to `loading.tsx` we can have an `error.tsx` file at different folder/route levels.
+Similar to `loading.tsx` we can have an `error.tsx` file at different
+folder/route levels.
 
 We use the props `error` and `reset` (NexJS knows about these).
 
@@ -1031,16 +1061,21 @@ export default function ErrorComponent({error, reset}: ErrorComponentProps) {
     </>
   )
 }
-
 ```
 
-But, we cannot capture errors that happen in the `RootLayout` file with `error-tax`. For that we create the file called `global-error.tsx`.
+But, we cannot capture errors that happen in the `RootLayout` file with
+`error-tax`. For that we create the file called `global-error.tsx`.
 
 ## Building APIs
 
-The convention is to use a folder named `api` for backend. You cannot have `page.tsx` and `route.ts` in the same folder. `route.ts` files are where we handle requests.
+The convention is to use a folder named `api` for backend. You cannot have
+`page.tsx` and `route.ts` in the same folder. `route.ts` files are where we
+handle requests.
 
-The main idea here is that routes like PUT, DELETE, and sometimes GET need an id, and go to a certain route. Routes like POST, and sometimes GET, hit a generic route. Based on that wide-spread fact, Next.js houses the routes in certain route folders.
+The main idea here is that routes like PUT, DELETE, and sometimes GET need an
+id, and go to a certain route. Routes like POST, and sometimes GET, hit a
+generic route. Based on that wide-spread fact, Next.js houses the routes in
+certain route folders.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/0kpoovv16zw7p79jik21.png)
 
@@ -1063,7 +1098,8 @@ export function GET(request: NextRequest) {
 
 ### Getting a single object
 
-Similar parameter convention to dynamic routes for pages, here we are also using the params object as a prop.
+Similar parameter convention to dynamic routes for pages, here we are also using
+the params object as a prop.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/scqcz76uwxb7b63ew050.png)
 
@@ -1111,7 +1147,8 @@ export default function UserDetailPage({params: {id}}: UserDetailsPageProps) {
 
 ### Updating and Deleting a single object
 
-Similar to Get, Update are Delete are at `api/users/[id]/route.ts`, because they interact with an entity that has an id.
+Similar to Get, Update are Delete are at `api/users/[id]/route.ts`, because they
+interact with an entity that has an id.
 
 ```ts
 // ./app/api/users/[id]/route.ts
@@ -1150,8 +1187,6 @@ export async function DELETE(request: NextRequest, {params: {id}}: Props) {
 }
 ```
 
-
-
 ### Getting objects, Posting an object
 
 These all go to the `api/users/route.ts` since they do not take an id.
@@ -1161,7 +1196,7 @@ These all go to the `api/users/route.ts` since they do not take an id.
 
 import {NextResponse, type NextRequest} from 'next/server'
 
-// need to have an argument (although not used) 
+// need to have an argument (although not used)
 // to prevent NextJs caching the result
 // which would be fine, really, because the result is always the same...
 export function GET(request: NextRequest) {
@@ -1177,22 +1212,18 @@ const getRandomId = (min = 1, max = 100) =>
 export async function POST(request: NextRequest) {
   const body = await request.json()
   if (!body.name) {
-    return NextResponse.json(
-      {error: 'Name is required'}, 
-      {status: 400}
-    )
+    return NextResponse.json({error: 'Name is required'}, {status: 400})
   }
 
-  return NextResponse.json(
-    {id: getRandomId(), name: body.name},
-    {status: 201}
-  )
+  return NextResponse.json({id: getRandomId(), name: body.name}, {status: 201})
 }
 ```
 
 ### Zod
 
-In the above for object crud, we have too many if statements for handling the shape of objects, which is called manual schema validation. Instead we can use a validation library such as Zod.
+In the above for object crud, we have too many if statements for handling the
+shape of objects, which is called manual schema validation. Instead we can use a
+validation library such as Zod.
 
 Previously we had our User type:
 
@@ -1205,7 +1236,8 @@ export type User = {
 }
 ```
 
-We can use the same type, but this time with schema validation of Zod. Think of schema like a more detailed specification of the type definition.
+We can use the same type, but this time with schema validation of Zod. Think of
+schema like a more detailed specification of the type definition.
 
 ```ts
 // ./app/users/schema.ts
@@ -1221,7 +1253,8 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>
 ```
 
-After that, in our functions, we can do better validation with `schema.safeParse(...)` and `.success`.
+After that, in our functions, we can do better validation with
+`schema.safeParse(...)` and `.success`.
 
 ```ts
 // ./app/api/users/[id]/route.tsx
@@ -1266,24 +1299,35 @@ export async function DELETE(request: NextRequest, {params: {id}}: Props) {
 
   return NextResponse.json({})
 }
-
 ```
 
 ## DB integration with Prisma
 
-To connect our applications to a database, we often use an Object-relational Mapper (ORM). An ORM is a tool that sits between a database and an application. It’s responsible for mapping database records to objects in an application. Prisma is the most widely-used ORM for Next.js (or Node.js) applications.
+To connect our applications to a database, we often use an Object-relational
+Mapper (ORM). An ORM is a tool that sits between a database and an application.
+It’s responsible for mapping database records to objects in an application.
+Prisma is the most widely-used ORM for Next.js (or Node.js) applications.
 
-1. **Define Models**: To use Prisma, first we have to define our data models. These are entities that represent our application domain, such as User, Order, Customer, etc. Each model has one or more fields (or properties).
+1. **Define Models**: To use Prisma, first we have to define our data models.
+   These are entities that represent our application domain, such as User,
+   Order, Customer, etc. Each model has one or more fields (or properties).
 
-​	`npx prisma init` , and then at `./prisma/schema.prisma` create your models.
+ `npx prisma init` , and then at `./prisma/schema.prisma` create your models.
 
-2. **Create migration file**: Once we create a model, we use Prisma CLI to create a migration file. A migration file contains instructions to generate or update database tables to match our models. These instructions are in SQL language, which is the language database engines understand. 
+2. **Create migration file**: Once we create a model, we use Prisma CLI to
+   create a migration file. A migration file contains instructions to generate
+   or update database tables to match our models. These instructions are in SQL
+   language, which is the language database engines understand.
 
-​	`npx prisma migrate dev`
+ `npx prisma migrate dev`
 
-3. **Create a Prisma client**: To connect with a database, we create an instance of PrismaClient. This client object gets automatically generated whenever we create a new migration. It exposes properties that represent our models (eg user). 
+3. **Create a Prisma client**: To connect with a database, we create an instance
+   of PrismaClient. This client object gets automatically generated whenever we
+   create a new migration. It exposes properties that represent our models (eg
+   user).
 
-​	At `./prisma/client.ts` copy paste this code
+ At `./prisma/client.ts` copy paste this code
+
 ```ts
 import {PrismaClient} from '@prisma/client'
 
@@ -1300,58 +1344,88 @@ export const prisma =
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ```
 
-
-
 ### What is Prisma for?
 
 Prisma is an open-source database toolkit that includes:
 
-1. **Prisma Client**: An auto-generated query builder used to access databases in a type-safe manner.
+1. **Prisma Client**: An auto-generated query builder used to access databases
+   in a type-safe manner.
 2. **Prisma Migrate**: A declarative data modeling and migration system.
 3. **Prisma Studio**: A modern GUI to view and edit your database records.
-4. **Prisma Schema**: A central source of truth for your database schema, from which the Prisma Client API and database migrations are derived.
+4. **Prisma Schema**: A central source of truth for your database schema, from
+   which the Prisma Client API and database migrations are derived.
 
 Prisma offers the following benefits:
 
-- **Type Safety**: Prisma Client integrates with TypeScript and Flow, providing a level of type safety when querying the database.
-  
-- **Auto-Generated Client**: Instead of writing raw SQL or using an ORM's custom query language, developers can use the auto-generated Prisma Client to compose queries.
-  
-- **Declarative Migrations**: Prisma Migrate allows developers to define their database schema in the Prisma schema language, and migrations are generated from changes to this schema, making it easier to evolve the database over time.
-  
-- **Modern Tooling**: With tools like Prisma Studio, developers get a powerful database GUI right out of the box.
+- **Type Safety**: Prisma Client integrates with TypeScript and Flow, providing
+  a level of type safety when querying the database.
+- **Auto-Generated Client**: Instead of writing raw SQL or using an ORM's custom
+  query language, developers can use the auto-generated Prisma Client to compose
+  queries.
+- **Declarative Migrations**: Prisma Migrate allows developers to define their
+  database schema in the Prisma schema language, and migrations are generated
+  from changes to this schema, making it easier to evolve the database over
+  time.
+- **Modern Tooling**: With tools like Prisma Studio, developers get a powerful
+  database GUI right out of the box.
 
 ### What did people do before Prisma?
 
-Before Prisma and similar tools, developers relied on various strategies and tools to interact with databases:
+Before Prisma and similar tools, developers relied on various strategies and
+tools to interact with databases:
 
-1. **Raw SQL Queries**: Developers often wrote plain SQL queries to interact with the database, which can be error-prone without careful management and can lack type safety in application code.
+1. **Raw SQL Queries**: Developers often wrote plain SQL queries to interact
+   with the database, which can be error-prone without careful management and
+   can lack type safety in application code.
 
-2. **ORMs (Object-Relational Mappings)**: ORMs like Sequelize (Node.js), Hibernate (Java), and ActiveRecord (Ruby on Rails) allowed developers to interact with their databases using objects in their respective programming languages. These ORMs can abstract away some of the database complexities but can also come with their own set of challenges, such as performance issues, a steep learning curve, or inflexibility with complex queries.
+2. **ORMs (Object-Relational Mappings)**: ORMs like Sequelize (Node.js),
+   Hibernate (Java), and ActiveRecord (Ruby on Rails) allowed developers to
+   interact with their databases using objects in their respective programming
+   languages. These ORMs can abstract away some of the database complexities but
+   can also come with their own set of challenges, such as performance issues, a
+   steep learning curve, or inflexibility with complex queries.
 
-3. **Database GUI Tools**: Before Prisma Studio, developers used standalone tools like MySQL Workbench, pgAdmin, or DBeaver to visually inspect and manage their databases.
+3. **Database GUI Tools**: Before Prisma Studio, developers used standalone
+   tools like MySQL Workbench, pgAdmin, or DBeaver to visually inspect and
+   manage their databases.
 
-4. **Migration Tools**: Tools like Flyway, Liquibase, and the migration systems integrated into ORMs were used to manage changes to the database schema over time.
+4. **Migration Tools**: Tools like Flyway, Liquibase, and the migration systems
+   integrated into ORMs were used to manage changes to the database schema over
+   time.
 
-5. **Database Drivers**: Most programming languages had libraries or drivers that facilitated direct connections to databases (e.g., `pg` for PostgreSQL in Node.js).
+5. **Database Drivers**: Most programming languages had libraries or drivers
+   that facilitated direct connections to databases (e.g., `pg` for PostgreSQL
+   in Node.js).
 
-6. **Custom Abstractions**: Some teams or projects built custom abstractions or layers on top of SQL or their database drivers to make database interactions more consistent or developer-friendly.
+6. **Custom Abstractions**: Some teams or projects built custom abstractions or
+   layers on top of SQL or their database drivers to make database interactions
+   more consistent or developer-friendly.
 
-In summary, before tools like Prisma, developers relied on a mix of ORMs, raw SQL, custom abstractions, and standalone database tools to interact with their databases. Prisma aims to provide a unified, type-safe, and developer-friendly toolkit that encompasses many of these functionalities.
+In summary, before tools like Prisma, developers relied on a mix of ORMs, raw
+SQL, custom abstractions, and standalone database tools to interact with their
+databases. Prisma aims to provide a unified, type-safe, and developer-friendly
+toolkit that encompasses many of these functionalities.
 
 ### Prerequisites & setup
 
-> Prerequisite: Install [MySQL community version](https://dev.mysql.com/downloads/mysql/) and DB viewer ([JetBrains DataGrip 30 day trial](https://www.jetbrains.com/datagrip/)) 
+> Prerequisite: Install
+> [MySQL community version](https://dev.mysql.com/downloads/mysql/) and DB
+> viewer
+> ([JetBrains DataGrip 30 day trial](https://www.jetbrains.com/datagrip/))
 
-ORM: Object Relational Mapper; a tool that sits between our app and a DB, to CRUD data. We are going to use Prisma as an ORM. `npm i prisma` .
+ORM: Object Relational Mapper; a tool that sits between our app and a DB, to
+CRUD data. We are going to use Prisma as an ORM. `npm i prisma` .
 
-Initialize Prisma. It creates `./prisma/schema.prisma` and adds a `DATABASE_URL` var to a `.env` file.
+Initialize Prisma. It creates `./prisma/schema.prisma` and adds a `DATABASE_URL`
+var to a `.env` file.
 
 ```bash
 npx prisma init
 ```
 
-Check the reference for [Prisma Connectors  > MySQL]((https://www.prisma.io/docs/concepts/database-connectors/mysql)); we need to update the `DATABASE_URL` var accordingly.
+Check the reference for
+[Prisma Connectors > MySQL](<(https://www.prisma.io/docs/concepts/database-connectors/mysql)>);
+we need to update the `DATABASE_URL` var accordingly.
 
 `DATABASE_URL="mysql://root:<yourPW>@localhost:3306/nextapp"`
 
@@ -1372,7 +1446,8 @@ datasource db {
 
 ### 1. Defining Models
 
-We need to define the models for our entities (User & Product) at `schema.prisma` file.
+We need to define the models for our entities (User & Product) at
+`schema.prisma` file.
 
 ```ts
 // ./prisma/schema.prisma
@@ -1404,24 +1479,44 @@ model Product {
 }
 ```
 
->  We can format the file with `npx prisma format`.
+> We can format the file with `npx prisma format`.
 >
-> More examples at https://www.prisma.io/docs/concepts/components/prisma-schema/data-model.
+> More examples at
+> https://www.prisma.io/docs/concepts/components/prisma-schema/data-model.
 
 ### 2. Creating migrations
 
-As you design or modify your application's models within the Prisma schema, you'll need to create migrations to reflect these changes in the actual database. 
+As you design or modify your application's models within the Prisma schema,
+you'll need to create migrations to reflect these changes in the actual
+database.
 
-Migrations are sets of instructions that tell the database how to transform its schema from one state to another, ensuring your database schema remains in sync with your Prisma schema.
+Migrations are sets of instructions that tell the database how to transform its
+schema from one state to another, ensuring your database schema remains in sync
+with your Prisma schema.
 
 Here's a more detailed breakdown of the migration process with Prisma:
 
-1. **Define or Modify Models**: Start by designing or changing your models within the Prisma schema (`schema.prisma`).
-2. **Generate a New Migration**: Using the Prisma CLI with the `prisma migrate dev` command, Prisma will compare the current state of the database with your newly defined or modified models. It then generates a new migration, which is essentially a SQL script that captures the necessary changes to transition the database schema to match the Prisma schema.
-3. **Migration Files**: This generated SQL script is saved in a `migration.sql` file within a timestamped folder under the `prisma/migrations` directory. Each migration has its own folder, allowing you to keep a historical record of all changes made to the database over time.
-4. **Apply Migrations**: When you're ready, you can apply these migrations to the actual database, either during development with `prisma migrate dev` or in production with `prisma migrate deploy`. This will execute the SQL statements in the migration files, updating the database schema to match the Prisma schema.
+1. **Define or Modify Models**: Start by designing or changing your models
+   within the Prisma schema (`schema.prisma`).
+2. **Generate a New Migration**: Using the Prisma CLI with the
+   `prisma migrate dev` command, Prisma will compare the current state of the
+   database with your newly defined or modified models. It then generates a new
+   migration, which is essentially a SQL script that captures the necessary
+   changes to transition the database schema to match the Prisma schema.
+3. **Migration Files**: This generated SQL script is saved in a `migration.sql`
+   file within a timestamped folder under the `prisma/migrations` directory.
+   Each migration has its own folder, allowing you to keep a historical record
+   of all changes made to the database over time.
+4. **Apply Migrations**: When you're ready, you can apply these migrations to
+   the actual database, either during development with `prisma migrate dev` or
+   in production with `prisma migrate deploy`. This will execute the SQL
+   statements in the migration files, updating the database schema to match the
+   Prisma schema.
 
-In essence, migrations serve as a bridge, ensuring that changes made in your Prisma schema are accurately and safely reflected in your database. This ensures consistency between your application's data model and the underlying database structure.
+In essence, migrations serve as a bridge, ensuring that changes made in your
+Prisma schema are accurately and safely reflected in your database. This ensures
+consistency between your application's data model and the underlying database
+structure.
 
 ```bash
 # start sql server
@@ -1469,11 +1564,13 @@ At DataGrip (or any other DB browser):
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/p77jb4o8l9iuksxdiiez.png)
 
-We used `next app` as the db name in the .`env` file, we also set the user and password there, so replicate those values here:
+We used `next app` as the db name in the .`env` file, we also set the user and
+password there, so replicate those values here:
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/iz9axfljpc3rx62upfqp.png)
 
-Initially you need to download the missing drivers, so hit that button and Test the connection. It should just connect.
+Initially you need to download the missing drivers, so hit that button and Test
+the connection. It should just connect.
 
 Create an item in the database for User and submit it
 
@@ -1502,32 +1599,36 @@ model User {
 }
 
 model Product {
-  id        Int      @id @default(autoincrement()) 
+  id        Int      @id @default(autoincrement())
   name      String   @unique
   price     Int
   createdAt DateTime @default(now())
 }
 ```
 
-After that change, migrate the database one more time with `npx prisma migrate dev` and give the migration a name like `add registered-at.
+After that change, migrate the database one more time with
+`npx prisma migrate dev` and give the migration a name like `add registered-at.
 
 A new folder and file gets created for the migration
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x4wg5dsatpkriimjs5gl.png)
 
-Once we refresh the DB browser, we will see the field `createdAt` get added for the entity, even to the items already existing in the DB.
+Once we refresh the DB browser, we will see the field `createdAt` get added for
+the entity, even to the items already existing in the DB.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/uzq7sp2n2lo9by3facax.png)
 
 ### 3. Creating a Prisma client
 
-To work with our db, we need to create a prisma client. 
+To work with our db, we need to create a prisma client.
 
-**Prisma Client**: An auto-generated query builder used to access databases in a type-safe manner.
+**Prisma Client**: An auto-generated query builder used to access databases in a
+type-safe manner.
 
 > Prisma client is always in sync with our db models.
 >
-> We can create the Prisma client anywhere in our app, but we want to make sure there is always at most 1 instance of it running; a singleton.
+> We can create the Prisma client anywhere in our app, but we want to make sure
+> there is always at most 1 instance of it running; a singleton.
 
 ```ts
 // ./prisma/client.ts
@@ -1541,7 +1642,10 @@ const prisma = new PrismaClient()
 export default prisma
 ```
 
-In Next.js, development mode, any time we change our source code, our modules get refreshed (hot module reloading), this end up in too many Prisma clients. We need to use the workaround for Next.js from their docs https://www.prisma.io/docs/guides/other/troubleshooting-orm/help-articles/nextjs-prisma-client-dev-practices.
+In Next.js, development mode, any time we change our source code, our modules
+get refreshed (hot module reloading), this end up in too many Prisma clients. We
+need to use the workaround for Next.js from their docs
+https://www.prisma.io/docs/guides/other/troubleshooting-orm/help-articles/nextjs-prisma-client-dev-practices.
 
 ```ts
 // ./prisma/client.ts
@@ -1561,12 +1665,13 @@ export const prisma =
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 ```
 
-_________________
+---
 
-At this point I switched to sqlite, so that I don't have to deal with CI headache for mysql. I am also checking in dev.db so that other ppl who pull the repo don't have to deal with the DB
+At this point I switched to sqlite, so that I don't have to deal with CI
+headache for mysql. I am also checking in dev.db so that other ppl who pull the
+repo don't have to deal with the DB
 
 Deleted the `./prisma` folder, then initialized sqlite.
-
 
 ```bash
 npx prisma init --datasource-provider sqlite
@@ -1596,7 +1701,7 @@ model User {
 }
 
 model Product {
-  id        Int      @id @default(autoincrement()) 
+  id        Int      @id @default(autoincrement())
   name      String   @unique
   price     Int
   createdAt DateTime @default(now())
@@ -1621,10 +1726,10 @@ The main idea here is to use prisma to interact with our DB.
 
 ```ts
 await prisma.user.findMany()
-await prisma.user.findUnique({ where: { email: 'a' } })
-await prisma.user.create({ data: { name: 'a', email: 'b'} })
-await prisma.user.update({ data: { email: 'c'}, where: { email: 'b'} })
-await prisma.user.delete({ where: { email: 'b'} })
+await prisma.user.findUnique({where: {email: 'a'}})
+await prisma.user.create({data: {name: 'a', email: 'b'}})
+await prisma.user.update({data: {email: 'c'}, where: {email: 'b'}})
+await prisma.user.delete({where: {email: 'b'}})
 ```
 
 ```ts
@@ -1718,7 +1823,6 @@ export async function DELETE(request: NextRequest, {params: {id}}: Props) {
 
   return NextResponse.json(deletedUser)
 }
-
 ```
 
 ```ts
@@ -1820,16 +1924,18 @@ export async function DELETE(request: NextRequest, {params: {id}}: Props) {
 
   return NextResponse.json(deletedProduct)
 }
-
 ```
 
 ## Uploading files
 
-To store the files we can use a cloud platform. We are using Cloudinary here (an alternative to AWS S3, Google Cloud & Microsoft Azure), because it has easier integration with Next.js. Register with a free account
+To store the files we can use a cloud platform. We are using Cloudinary here (an
+alternative to AWS S3, Google Cloud & Microsoft Azure), because it has easier
+integration with Next.js. Register with a free account
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3yaap2i5urxy7kdw5j7f.png)
 
 Add the cloud name (bottom left) to the .env file
+
 ```
 DATABASE_URL="file:./dev.db"
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
@@ -1841,17 +1947,22 @@ npm i next-cloudinary
 
 This lib has a bunch of React components we can use easily.
 
-Take a look at the docs https://next.cloudinary.dev/clduploadwidget/basic-usage , we will use the upload widget and copy paste it in.
+Take a look at the docs https://next.cloudinary.dev/clduploadwidget/basic-usage
+, we will use the upload widget and copy paste it in.
 
-We need a value for `uploadPreset`. We get that at Cloudinary > Settings (gear icon) > Add upload preset:
+We need a value for `uploadPreset`. We get that at Cloudinary > Settings (gear
+icon) > Add upload preset:
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/08g7535ojqpbu24y00kj.png)
 
-Copy the upload preset name, set signing mode unsigned (easier) and leave everything else default.
+Copy the upload preset name, set signing mode unsigned (easier) and leave
+everything else default.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2py0l4xtb5mkuj2upupu.png)
 
-The `CldUploadWidget` wants a function as a child, and that function takes many optional arguments, one of them is `open` which we use for click handler. Since we have a click event, this one has to be client component.
+The `CldUploadWidget` wants a function as a child, and that function takes many
+optional arguments, one of them is `open` which we use for click handler. Since
+we have a click event, this one has to be client component.
 
 ```tsx
 // ./app/upload/page.tsx
@@ -1876,7 +1987,9 @@ We can view the uploaded assets at Media library.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yo810iholkp9m6l31o2g.png)
 
-In order to display the uploaded image, we use the `CldImage` component, and only display it after upload if the upload was successful, utilizing the publicId state variable we created.
+In order to display the uploaded image, we use the `CldImage` component, and
+only display it after upload if the upload was successful, utilizing the
+publicId state variable we created.
 
 ```tsx
 // ./app/upload/page.tsx
@@ -1924,7 +2037,7 @@ Cloudinary upload cheat sheet:
 
 ### Setting up Next AUth
 
-https://next-auth.js.org/providers/  https://authjs.dev/
+https://next-auth.js.org/providers/ https://authjs.dev/
 
 ```bash
 npm i next-auth
@@ -1942,13 +2055,13 @@ const handler = NextAuth({})
 
 // any GET or POST will get handled by the NextAuth handler
 export {handler as GET, handler as POST}
-
 ```
 
-We need 2 new environment variables. We can generate a random secret with the following in bash:
+We need 2 new environment variables. We can generate a random secret with the
+following in bash:
 
 ```bash
-openssl rand -base64 32   
+openssl rand -base64 32
 ```
 
 ```
@@ -1960,7 +2073,19 @@ NEXTAUTH_SECRET="TbcR4oYsW3c7srouavU4tR++gP9j7JmDzzAFPLL5UNw="
 
 ### Configuring Google Provider
 
-Provider: in Next Auth, these are services we can use to sign in a user (Auth0, Okta, Google etc.).
+Provider: in Next Auth, these are services we can use to sign in a user (Auth0,
+Okta, Google etc.).
+
+Google has made a creation of an SSO-enabled app pretty easy for developers..
+There are a couple of steps to this:
+
+1. Create a OAuth project on
+   [Google developer console](https://console.developers.google.com/)
+2. Set up which domains this application can be used on
+3. Set up where you will be redirected after a user returns from Google login
+   screen
+4. Add a button to your frontend
+5. Add a validation to your backend
 
 Create a project on Google cloud:
 
@@ -1970,7 +2095,8 @@ Configure consent screen, and pick External:
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/kv42bdu9yxh4vjeqpk7j.png)
 
-On OAuth consent screen, fill in the app name, user support email and developer email. Leave the rest empty.
+On OAuth consent screen, fill in the app name, user support email and developer
+email. Leave the rest empty.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/m7z7337tyo28n6q8i65e.png)
 
@@ -1978,21 +2104,30 @@ On Scopes pick email and profile.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/rf1v1au5x73zifurz66a.png)
 
-Password-1In Test Users, I created an email to use for testing. We can have 100 of these and only they can log in for now.
+In Test Users, I created an email to use for testing. We can have 100 of these
+and only they can log in for now.
 
 next.app.mosh@gmail.com Password-1
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zuv59y7rdl236uhqe1eu.png)
 
-Save and go to Dashboard view. After that go to Credentials > Create Credentials > OAuth Client ID
+Save and go to Dashboard view. After that go to Credentials > Create
+Credentials > OAuth Client ID
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/75n45fhlwi7ngom09wg8.png)
 
-Choose web app for app type. Give it a name. Add the url, and the redirect url (`/api/auth/callback/google` is from Next Auth docs) .
+Choose web app for app type. Give it a name. Add the url, and the redirect url
+(`/api/auth/callback/google` is from Next Auth docs) .
 
-![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/6olmohlzvvt8tmbi8df5.png)
+Here, make sure to add `https://developers.google.com/oauthplayground` as a
+redirect URI, this is needed for testing.
 
-Copy the clientId and secret to the `.env` file.
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/q77cl4qv1h7malrhk4nh.png)
+
+Copy the client Id and client secret to the `.env` file. _client_ in this
+context points to your application, and not the user that is trying to log in to
+your application.
+
 ```
 DATABASE_URL="file:./dev.db"
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
@@ -2023,11 +2158,13 @@ const handler = NextAuth({
 export {handler as GET, handler as POST}
 ```
 
-And finally we can add the sign in link to the `NavBar`. `/api/auth/` is the route we created via the folder structure, `/signin` gets exposed by NextAuth.
+And finally we can add the sign in link to the `NavBar`.
+
+`/api/auth` is the route we created via the folder structure, `/signin` gets
+exposed by NextAuth.
 
 ```tsx
 import Link from 'next/link'
-import React from 'react'
 
 export default function NavBar() {
   return (
@@ -2046,5 +2183,155 @@ export default function NavBar() {
 }
 ```
 
+### [OAuth Playground](https://developers.google.com/oauthplayground/) (for testing)
 
+This service will allow you to create a "refresh token". With this token, you
+can authenticate against Google API. What this means is, that you can access
+data from your Google account. In most "Google sign in enabled" apps, the data
+would be things like your profile picture, email, your name, or some other data
+from your account.
+
+There are many options on this playground, but since we just want to
+authenticate in our app, we want to choose "Google Oauth API v2".
+
+![Google oauth playground scope](https://res.cloudinary.com/dcnwsgh7c/image/upload/f_auto/q_auto/v1//playground_api.png?_a=BBDAACAD0)
+
+Not only we want to scope the data that the refresh token will have access to,
+but we want to scope **where** can this token be used. To use it only in our
+project, check the "Use your own OAuth credentials" checkbox and enter the
+**Client ID** and **Client secret**. Remember how I mentioned those?
+
+![Google oauth configuration](https://res.cloudinary.com/dcnwsgh7c/image/upload/f_auto/q_auto/v1//playground_oauth.png?_a=BBDAACAD0)
+
+After setting this up, click the "Authorize API" button and proceed to step 2.
+You are just click of a button away. Click on "Exchange authorization code for
+tokens" button and copy the refresh token.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/yao87ytqpr5edkstjg16.png)
+
+```
+DATABASE_URL="file:./dev.db"
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
+NEXTAUTH_URL="http:localhost:3000"
+NEXTAUTH_SECRET="TbcR4oYsW3c7srouavU4tR++gP9j7JmDzzAFPLL5UNw="
+GOOGLE_CLIENT_ID="373837629743-gd9opq4ki0tv8gj0d260rgje8p9jo82l.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="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"
+GOOGLE_REFRESH_TOKEN="1//04vwVjlTf_ZFfCgYIARAAGAQSNwF-L9IrpibDCDBouAmLCDemQlgtfUvBRVRZ0HM4dzloDmasF_8en2X5mQEE6sGOPQw9gWBEb18"
+GOOGLE_USER="next.app.mosh@gmail.com",
+GOOGLE_PW="Password-1",
+COOKIE_NAME="next-auth.session-token",
+SITE_NAME="http://localhost:3000"
+```
+
+### Understanding Authentication Sessions
+
+If we take a look at our cookies we see an encrypted value for
+`next-auth.session-token`. This one is created by `Next Auth`, and the server
+can make sense out of the value by decrypting it to json.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3abfhz4hxmvf5c43flpa.png)
+
+You will not need this in a real app, but to see how things work under the hood,
+it is useful.
+
+```tsx
+// ./app/api/auth/token/route.ts
+
+import {getToken} from 'next-auth/jwt'
+import {NextResponse} from 'next/server'
+import type {NextRequest} from 'next/server'
+
+export async function GET(request: NextRequest) {
+  const token = await getToken({req: request})
+  return NextResponse.json(token)
+}
+```
+
+Visit the route and we will get the token.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/p1cc0o7kws67n5e0u1ha.png)
+
+### Accessing Sessions on the client
+
+To access the auth session on the client, we have to wrap the root layout inside
+a `sessionProvider` component from `next-auth`. Internally `SessionProvider`
+uses `react-context` to pass the session down the app tree.
+
+To be able to use the `SessionProvider` with server components, have to further
+wrap `SessionProvider` inside a separate client component. Create a new file at
+`app/auth/Provider.tsx`:
+
+```tsx
+// ./app/auth/Provider.tsx
+
+'use client'
+import {SessionProvider} from 'next-auth/react'
+
+export default function AuthProvider({children}: {children: React.ReactNode}) {
+  return <SessionProvider>{children}</SessionProvider>
+}
+```
+
+```tsx
+// ./app/layout.tsx
+
+import './globals.css'
+import type {Metadata} from 'next'
+import {Inter} from 'next/font/google'
+import NavBar from './NavBar'
+import AuthProvider from 'app/auth/Provider'
+
+const inter = Inter({subsets: ['latin']})
+
+export const metadata: Metadata = {
+  title: 'Create Next App',
+  description: 'Generated by create next app',
+}
+
+export default function RootLayout({children}: {children: React.ReactNode}) {
+  return (
+    <html lang="en" data-theme="winter">
+      <body className={inter.className}>
+        <AuthProvider>
+          <NavBar />
+          <main className="p-5">{children}</main>
+        </AuthProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+Now we can access the session, so that we can show the user's name in the
+`Navbar`.
+
+We utilize the `useSession` hook from `next-auth/react`. We have to make it a client component when using this hook because the hook accesses the context object being passed by `SessionProvider`.
+
+```tsx
+'use client'
+import {useSession} from 'next-auth/react'
+import Link from 'next/link'
+
+export default function NavBar() {
+  const {status, data: session} = useSession()
+
+  return (
+    <div className="flex bg-slate-200 p-5 space-x-3">
+      <Link data-cy="navbar-home-link" href="/" className="mr-5">
+        Home
+      </Link>
+      <Link data-cy="navbar-users-link" href="/users" className="mr-5">
+        Users
+      </Link>
+      {status === 'loading' && <div>Loading...</div>}
+      {status === 'authenticated' && <div>{session.user!.name}</div>}
+      {status === 'unauthenticated' && (
+        <Link data-cy="navbar-sign-in" href="/api/auth/signin" className="mr-5">
+          Login
+        </Link>
+      )}
+    </div>
+  )
+}
+```
 

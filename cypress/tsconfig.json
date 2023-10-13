@@ -1,7 +1,13 @@
 {
   "compilerOptions": {
     "lib": ["esnext", "dom"],
-    "types": ["cypress", "node", "@bahmutov/cy-api", "cypress-map"],
+    "types": [
+      "cypress",
+      "node",
+      "@bahmutov/cy-api",
+      "cypress-map",
+      "cypress-v10-preserve-cookie"
+    ],
     "baseUrl": "./",
     "paths": {
       "@support/*": ["support/*"],
