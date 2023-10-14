@@ -11,5 +11,8 @@ describe('Login', () => {
     // TODO: make this work
     // the next-auth.session-token cookie clears,
     // cy.contains(session.user.name).should('be.visible')
+
+    // when this works, getServerSession can also be tested properly
+    // it should display "Hello <Name>""
   })
 })

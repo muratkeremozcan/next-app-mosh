@@ -2335,3 +2335,53 @@ export default function NavBar() {
 }
 ```
 
+### Accessing session on the server
+
+To access the auth session on the server, we utilize `getServerSession` from `next-auth`. The `getServerSession` function takes some auth options, which we have at our handler definition `app/api/auth/[...nextauth]/route.ts`; we have to just export it out after a small refactor.
+
+```ts
+// ./app/api/auth/[...nextauth]/route.ts
+
+import NextAuth from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+
+// export the options so we can use them
+// to access the session at the server, at Home component
+export const authOptions = {
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+}
+
+const handler = NextAuth(authOptions)
+
+// any GET or POST will get handled by the NextAuth handler
+export {handler as GET, handler as POST}
+```
+
+`getServerSession` returns a promise which we await, then utilize in the component.
+
+```ts
+import Link from 'next/link'
+import ProductCard from './components/ProductCard'
+import {getServerSession} from 'next-auth'
+import {authOptions} from './api/auth/[...nextauth]/route'
+
+export default async function Home() {
+  const session = await getServerSession(authOptions)
+
+  return (
+    <main>
+      <h1>Hello {session && <span>{session.user!.name} </span>}</h1>
+      <Link data-cy="home-page-users-link" href="/users">
+        Users
+      </Link>
+      <ProductCard />
+    </main>
+  )
+}
+```
+
