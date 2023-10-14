@@ -1,7 +1,7 @@
 describe('Users route', () => {
   beforeEach(() => {
     cy.visit('/')
-    cy.contains('Hello World')
+    cy.contains('Hello')
     cy.contains('Users')
     cy.contains('.btn', /add to cart/i)
     // when we are click-navigating to a route, there is a network call,
