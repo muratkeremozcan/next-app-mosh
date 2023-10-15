@@ -14,7 +14,14 @@ export default function NavBar() {
         Users
       </Link>
       {status === 'loading' && <div>Loading...</div>}
-      {status === 'authenticated' && <div>{session.user!.name}</div>}
+      {status === 'authenticated' && (
+        <div>
+          {session.user!.name}
+          <Link href="/api/auth/signout" className="ml-3">
+            Sign out
+          </Link>
+        </div>
+      )}
       {status === 'unauthenticated' && (
         <Link data-cy="navbar-sign-in" href="/api/auth/signin" className="mr-5">
           Login

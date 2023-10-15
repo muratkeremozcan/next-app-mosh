@@ -23,7 +23,7 @@ describe('<NavBar />', () => {
     cy.getByCy('navbar-sign-in').should('be.visible')
   })
 
-  it('should show user name when authenticated', () => {
+  it('should show user name when authenticated, and not show after sign out', () => {
     cy.intercept(
       {
         method: 'GET',
@@ -42,5 +42,8 @@ describe('<NavBar />', () => {
     cy.getByCy('navbar-users-link')
     cy.getByCy('navbar-sign-in').should('not.exist')
     cy.contains(session.user.name).should('be.visible')
+
+    cy.contains(/sign out/i).click()
+    cy.location('pathname').should('eq', '/api/auth/signout')
   })
 })

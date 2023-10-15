@@ -2335,52 +2335,45 @@ export default function NavBar() {
 }
 ```
 
-### Accessing session on the server
+### Sign out 
 
-To access the auth session on the server, we utilize `getServerSession` from `next-auth`. The `getServerSession` function takes some auth options, which we have at our handler definition `app/api/auth/[...nextauth]/route.ts`; we have to just export it out after a small refactor.
+There is an endpoint in `next-auth` that handles signing out; `/api/auth/signout`. We can add it as a `Link`
 
-```ts
-// ./app/api/auth/[...nextauth]/route.ts
 
-import NextAuth from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
 
-// export the options so we can use them
-// to access the session at the server, at Home component
-export const authOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-}
+```tsx
+// ./app/NavBar.tsx
 
-const handler = NextAuth(authOptions)
-
-// any GET or POST will get handled by the NextAuth handler
-export {handler as GET, handler as POST}
-```
-
-`getServerSession` returns a promise which we await, then utilize in the component.
-
-```ts
+'use client'
+import {useSession} from 'next-auth/react'
 import Link from 'next/link'
-import ProductCard from './components/ProductCard'
-import {getServerSession} from 'next-auth'
-import {authOptions} from './api/auth/[...nextauth]/route'
 
-export default async function Home() {
-  const session = await getServerSession(authOptions)
+export default function NavBar() {
+  const {status, data: session} = useSession()
 
   return (
-    <main>
-      <h1>Hello {session && <span>{session.user!.name} </span>}</h1>
-      <Link data-cy="home-page-users-link" href="/users">
+    <div className="flex bg-slate-200 p-5 space-x-3">
+      <Link data-cy="navbar-home-link" href="/" className="mr-5">
+        Home
+      </Link>
+      <Link data-cy="navbar-users-link" href="/users" className="mr-5">
         Users
       </Link>
-      <ProductCard />
-    </main>
+      {status === 'loading' && <div>Loading...</div>}
+      {status === 'authenticated' && (
+        <div>
+          {session.user!.name}
+          <Link href="/api/auth/signout" className="ml-3">
+            Sign out
+          </Link>
+        </div>
+      )}
+      {status === 'unauthenticated' && (
+        <Link data-cy="navbar-sign-in" href="/api/auth/signin" className="mr-5">
+          Login
+        </Link>
+      )}
+    </div>
   )
 }
 ```
