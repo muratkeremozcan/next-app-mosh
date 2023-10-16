@@ -2035,6 +2035,14 @@ Cloudinary upload cheat sheet:
 
 ## Authentication
 
+NextAuth.js is a popular authentication library for Next.js applications. It simples the implementation of secure user authentication and authorization. It supports various authentication providers (eg Google, Twitter, GitHub, Credentials, etc).
+
+> `next-auth` creates auto generated endpoints:
+>
+> `/api/auth/signin`
+>
+> `/api/auth/signout`
+
 ### Setting up Next AUth
 
 https://next-auth.js.org/providers/ https://authjs.dev/
@@ -2307,6 +2315,9 @@ Now we can access the session, so that we can show the user's name in the
 
 We utilize the `useSession` hook from `next-auth/react`. We have to make it a client component when using this hook because the hook accesses the context object being passed by `SessionProvider`.
 
+* `const {data: session, status} = useSession()`  -> on the client
+* `const session = await getServerSession(authOptions)  -> on the server
+
 ```tsx
 'use client'
 import {useSession} from 'next-auth/react'
@@ -2338,8 +2349,6 @@ export default function NavBar() {
 ### Sign out 
 
 There is an endpoint in `next-auth` that handles signing out; `/api/auth/signout`. We can add it as a `Link`
-
-
 
 ```tsx
 // ./app/NavBar.tsx
@@ -2377,4 +2386,101 @@ export default function NavBar() {
   )
 }
 ```
+
+### Protecting our routes
+
+Using middleware we can execute code before a request is completed. That’s an opportunity for us to redirect the user to the login page if they try to access a private part of our application without having a session. Next Auth includes built-in middleware for this purpose
+
+This file has to exist at repo root, or outside of `app` if you are using `src` folder.
+
+```ts
+// ./middleware.ts
+
+import middleware from 'next-auth/middleware'
+export default middleware
+// or short syntax
+// export {default} from 'next-auth/middleware'
+
+// `next-auth` already implements this,
+// but we keep this here as a demo in case you have to do it yourself.
+// export function middleware(request: NextRequest) {
+//   // the 2nd arg is the base url, we get it from the request object
+//   return NextResponse.redirect(new URL('/new-page', request.url))
+// }
+
+// if we want to execute the middleware on only certain paths:
+export const config = {
+  // * : zero or more
+  // + : one or more
+  // ? : zero or one
+  matcher: ['/dashboard'], // made up route for testing
+  // matcher: ['/users/:id:*'],
+}
+```
+
+### Database Adapters 
+
+> Shitcan this section. He went all over the place with data type migration, and since he's not doing any type check or testing, he YOLO'd it. 
+> If you have to fix all that, not worth this change at all.
+
+In a real app we store the user info in a DB. `next-auth` can automatically store the user data in our DB.
+
+```bash
+# we previously installed prisma and prisma client
+npm i @prisma/client @next-auth/prisma-adapter
+npm i -D prisma
+```
+
+Next, we specify the adapter as `next-auth` is initialized.
+
+```ts
+// ./app/api/auth/[...nextauth]/route.ts
+
+import NextAuth from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
+import {PrismaAdapter} from '@next-auth/prisma-adapter'
+import {prisma} from '@/prisma/client'
+
+export const authOptions = {
+  adapter: PrismaAdapter(prisma), // new
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+}
+
+const handler = NextAuth(authOptions)
+
+export {handler as GET, handler as POST}
+```
+
+Now we have to add some models for the prisma-adapter to our `schema.prisma`.
+
+>  If you have to deal with your own auth, check out [this section](https://members.codewithmosh.com/courses/mastering-next-js-13-with-typescript-1/lectures/49120452) and the next one. I'm not diverging the app here. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
