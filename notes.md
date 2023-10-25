@@ -282,7 +282,7 @@ Use camel case for class names.
 Import and use:
 
 ```css
-// app/components/ProductCard.module.css
+// ./app/components/ProductCard.module.css
 .card {
   padding: 1rem;
   border: 1px solid #ccc;
@@ -290,7 +290,7 @@ Import and use:
 ```
 
 ```tsx
-// app/components/ProductCard.tsx
+// ./app/components/ProductCard.tsx
 import AddToCart from './AddToCart'
 import styles from './ProductCard.module.css'
 
@@ -765,7 +765,7 @@ export default function AdminHomePage() {
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/srhxi1e6uryhwn731t3o.png)
 
 Suppose we want to add a nav bar to all pages. This component could go in
-components folder, gut it is only used with `RootLayout` so it is fine at root.
+components folder, but it is only used with `RootLayout` so it is fine at root.
 
 ```tsx
 // ./app/NavBar.tsx
@@ -886,6 +886,8 @@ Click a button, submit a form -> for these we need prog nav.
 We use `useRouter` from `next/navigation`, and `.push(/the-route )`.
 
 ```tsx
+// ./app/users/new/page.tsx
+
 'use client'
 // remember, we still need client components when we:
 // - Listen to browser events
@@ -925,7 +927,8 @@ import UsersTable from './UsersTable'
 import Link from 'next/link'
 
 type UsersPageProps = {
-as a prop in the component
+  // to access query string parameters
+  // we use `searchParams` object as a prop in the component
   searchParams: {
     sortOrder: string
   }
@@ -959,7 +962,7 @@ pane click on the clock icon.
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/dei8ngl7v5rma7rbbdkt.png)
 
 If we want to add Suspense to every component, it can be in the `RootLayout`
-component, wrapping the children or use the special loading file in NextJs.
+component, wrapping the children or use the special loading file in NextJs at `app/loading.tsx`.
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/f96t13rvrjkczaqi7sus.png)
 
@@ -1064,7 +1067,7 @@ export default function ErrorComponent({error, reset}: ErrorComponentProps) {
 ```
 
 But, we cannot capture errors that happen in the `RootLayout` file with
-`error-tax`. For that we create the file called `global-error.tsx`.
+`error-tsx`. For that we create the file called `global-error.tsx`.
 
 ## Building APIs
 
@@ -1314,6 +1317,8 @@ Prisma is the most widely-used ORM for Next.js (or Node.js) applications.
 
  `npx prisma init` , and then at `./prisma/schema.prisma` create your models.
 
+> We want to match these with our Zod types, ex: `./app/api/users/schema.ts`, `./app/api/products/schema.ts`
+
 2. **Create migration file**: Once we create a model, we use Prisma CLI to
    create a migration file. A migration file contains instructions to generate
    or update database tables to match our models. These instructions are in SQL
@@ -1357,7 +1362,7 @@ Prisma is an open-source database toolkit that includes:
 
 Prisma offers the following benefits:
 
-- **Type Safety**: Prisma Client integrates with TypeScript and Flow, providing
+- **Type Safety**: Prisma Client integrates with TypeScript, providing
   a level of type safety when querying the database.
 - **Auto-Generated Client**: Instead of writing raw SQL or using an ORM's custom
   query language, developers can use the auto-generated Prisma Client to compose
@@ -2035,7 +2040,7 @@ Cloudinary upload cheat sheet:
 
 ## Authentication
 
-NextAuth.js is a popular authentication library for Next.js applications. It simples the implementation of secure user authentication and authorization. It supports various authentication providers (eg Google, Twitter, GitHub, Credentials, etc).
+NextAuth.js is a popular authentication library for Next.js applications. It simplifies the implementation of secure user authentication and authorization. It supports various authentication providers (eg Google, Twitter, GitHub, Credentials, etc).
 
 > `next-auth` creates auto generated endpoints:
 >
@@ -2172,6 +2177,8 @@ And finally we can add the sign in link to the `NavBar`.
 exposed by NextAuth.
 
 ```tsx
+// ./app/NavBar.tsx
+
 import Link from 'next/link'
 
 export default function NavBar() {
@@ -2207,7 +2214,7 @@ authenticate in our app, we want to choose "Google Oauth API v2".
 Not only we want to scope the data that the refresh token will have access to,
 but we want to scope **where** can this token be used. To use it only in our
 project, check the "Use your own OAuth credentials" checkbox and enter the
-**Client ID** and **Client secret**. Remember how I mentioned those?
+**Client ID** and **Client secret**.
 
 ![Google oauth configuration](https://res.cloudinary.com/dcnwsgh7c/image/upload/f_auto/q_auto/v1//playground_oauth.png?_a=BBDAACAD0)
 
@@ -2265,7 +2272,7 @@ To access the auth session on the client, we have to wrap the root layout inside
 a `sessionProvider` component from `next-auth`. Internally `SessionProvider`
 uses `react-context` to pass the session down the app tree.
 
-To be able to use the `SessionProvider` with server components, have to further
+To be able to use the `SessionProvider` with server components, we have to further
 wrap `SessionProvider` inside a separate client component. Create a new file at
 `app/auth/Provider.tsx`:
 
@@ -2316,9 +2323,11 @@ Now we can access the session, so that we can show the user's name in the
 We utilize the `useSession` hook from `next-auth/react`. We have to make it a client component when using this hook because the hook accesses the context object being passed by `SessionProvider`.
 
 * `const {data: session, status} = useSession()`  -> on the client
-* `const session = await getServerSession(authOptions)  -> on the server
+* `const session = await getServerSession(authOptions)`  -> on the server
 
 ```tsx
+// ./app/NavBar.tsx
+
 'use client'
 import {useSession} from 'next-auth/react'
 import Link from 'next/link'

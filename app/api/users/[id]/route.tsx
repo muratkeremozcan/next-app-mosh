@@ -28,9 +28,9 @@ export async function PUT(request: NextRequest, {params: {id}}: Props) {
 
   // better validation with Zod
   const validation = UserSchema.safeParse(body)
-  if (!validation.success) {
+  if (!validation.success)
     return NextResponse.json(validation.error.errors, {status: 400})
-  }
+
   // used to be manual validation, like this
   // if (!body.name) {
   //   return NextResponse.json({error: 'Name is required'}, {status: 400})
