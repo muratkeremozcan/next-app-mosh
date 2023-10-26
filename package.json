@@ -14,9 +14,12 @@
     "cy:run-e2e": "cypress run --e2e --browser chrome",
     "cy:open-ct": "cypress open --component --browser chrome",
     "cy:run-ct": "cypress run --component --browser chrome",
-    "cy:run-ct-fast": "CYPRESS_NO_COMMAND_LOG=1 yarn cy:run-ct --config video=false screenshot=false"
+    "cy:run-ct-fast": "CYPRESS_NO_COMMAND_LOG=1 yarn cy:run-ct --config video=false screenshot=false",
+    "preview:email": "email dev -p 3030"
   },
   "dependencies": {
+    "@radix-ui/react-popover": "^1.0.7",
+    "@react-email/components": "^0.0.7",
     "autoprefixer": "10.4.16",
     "cypress-iframe": "^1.0.1",
     "next": "13.5.2",
@@ -25,6 +28,8 @@
     "postcss": "8.4.30",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-email": "^1.9.4",
+    "resend": "^1.1.0",
     "tailwindcss": "3.3.3",
     "zod": "^3.22.4"
   },
@@ -32,9 +37,11 @@
     "@bahmutov/cy-api": "^2.2.6",
     "@faker-js/faker": "^8.1.0",
     "@prisma/client": "^5.3.1",
+    "@radix-ui/colors": "^3.0.0",
     "@types/node": "20.6.3",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
+    "classnames": "^2.3.2",
     "cy-spok": "^1.6.2",
     "cypress": "^13.3.0",
     "cypress-map": "^1.21.1",
@@ -50,8 +57,11 @@
     "eslint-plugin-no-only-tests": "3.1.0",
     "eslint-plugin-prettier": "5.0.0",
     "fast-sort": "^3.4.0",
+    "framer-motion": "^10.16.4",
     "prettier": "3.0.3",
+    "prism-react-renderer": "^2.1.0",
     "prisma": "^5.4.1",
+    "radix-ui": "^1.0.1",
     "typescript": "5.2.2"
   }
 }

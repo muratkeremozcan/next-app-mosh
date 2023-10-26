@@ -2471,19 +2471,185 @@ Now we have to add some models for the prisma-adapter to our `schema.prisma`.
 
 
 
+## Sending emails
+
+Traditionally, creating and managing email templates has involved a mixture of manual HTML/CSS coding, often with inlining styles and cumbersome table layouts to ensure compatibility across various email clients. This process, although widely practiced, can become complex and hard to maintain, especially when templates grow in number and complexity. Dynamic content insertion relies on backend logic, typically handled by server-side environments like Node.js, and traditional templating engines, which separately manage the data binding aspects. Additionally, developers often need to use testing services like Email on Acid to ensure templates look good across all email platforms, which adds another layer to the workflow.
+
+In this landscape, `react-email` introduces a significant shift. It allows developers to utilize the power of React, a well-known front-end library, to create email templates using components. This approach simplifies the development process, making templates more readable, maintainable, and easier to iterate upon. With components, developers can easily reuse parts of the layout or logic, keep the templates consistent, and avoid common pitfalls associated with traditional email template creation. Additionally, `react-email` supports modern styling solutions and interactive local previews, further modernizing the email development workflow. The use of a component-based approach, familiar to many developers and combined with existing Node.js server environments, allows for a streamlined development process, while the interactive previews provide an opportunity for immediate feedback, potentially reducing reliance on third-party email testing services.
 
 
 
+### Setting up [React.email(https://react.email/)
+
+```bash
+npm install react-email @react-email/components
+```
+
+Add a script in `package.json` to preview the email:
+
+```json
+"preview:email": "email dev -p 3030"
+```
+
+### Creating an email template
+
+`react-email` has a few handy components we can use to create an email template.
+
+```tsx
+// ./emails/WelcomeTemplate.tsx
+
+import {
+  Html,
+  Body,
+  Container,
+  Text,
+  Link,
+  Preview,
+} from '@react-email/components'
+
+export default function WelcomeTemplate({name}: {name: string}) {
+  return (
+    <Html>
+      <Preview>Welcome aboard!</Preview>
+      <Body>
+        <Container>
+          <Text>Hello {name}</Text>
+          <Link href="https://react-email.js.org">React Email</Link>
+        </Container>
+      </Body>
+    </Html>
+  )
+}
+```
+
+### Preview emails
+
+The email preview utility of `react-email` creates a whole new app, and it is for local use only, so gitignore it.
+```.gitignore
+.react-email/
+```
+
+It also needs a bunch of libs to make it work, which Mosh doesn't mention (for him it just works without these, but I had to peel the onion one layer at a time to make it work).
+
+```bash
+npm install -D classnames prism-react-renderer radix-ui framer-motion
+```
+
+Generate the utility app to preview the email.
+
+```bash
+npm run preview:email
+```
+
+### Styling emails
+
+There are two approaches. We can import the type from react, and use it to create inline styles for the components
+
+```tsx
+import type {CSSProperties} from 'react'
+
+...
+  <Body style={body}>
+    <Container>
+      <Text style={heading}>Hello {name}</Text>
 
 
+const body: CSSProperties = {
+  background: '#fff',
+}
 
+const heading: CSSProperties = {
+  fontSize: '32px',
+}
+```
 
+Or, the better way, we can use Tailwind, but imported from `@react-email/components` this time.
 
+```tsx
 
+// ./app/api/auth/[...nextauth]/route.ts
 
+import {
+  Html,
+  Body,
+  Container,
+  Text,
+  Link,
+  Preview,
+  Tailwind,
+} from '@react-email/components'
 
+export default function WelcomeTemplate({name}: {name: string}) {
+  return (
+    <Html>
+      <Preview>Welcome aboard!</Preview>
+      <Tailwind>
+        <Body className="bg-white">
+          <Container>
+            <Text className="font-bold text-3xl">Hello {name}</Text>
+            <Link href="https://react-email.js.org">React Email</Link>
+          </Container>
+        </Body>
+      </Tailwind>
+    </Html>
+  )
+}
+```
 
+### Sending emails
 
+React-email integrates with [a few services](https://react.email/docs/introduction#integrations) like AWS SES. We are using [Resend](https://resend.com/) in this tutorial (3000 emails free per month).
+
+Create an account and an api key, add it to .env.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/s0qvwqzdq9awww1u2zkz.png)
+
+```
+DATABASE_URL="file:./dev.db"
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="dyszxrfnq"
+NEXTAUTH_URL="http:localhost:3000"
+NEXTAUTH_SECRET="TbcR4oYsW3c7srouavU4tR++gP9j7JmDzzAFPLL5UNw="
+GOOGLE_CLIENT_ID="373837629743-gd9opq4ki0tv8gj0d260rgje8p9jo82l.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="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"
+GOOGLE_REFRESH_TOKEN="1//04vwVjlTf_ZFfCgYIARAAGAQSNwF-L9IrpibDCDBouAmLCDemQlgtfUvBRVRZ0HM4dzloDmasF_8en2X5mQEE6sGOPQw9gWBEb18"
+GOOGLE_USER="next.app.mosh@gmail.com",
+GOOGLE_PW="Password-1",
+COOKIE_NAME="next-auth.session-token",
+SITE_NAME="http://localhost:3000"
+RESEND_API_KEY=re_dBvqNyCL_HwTMwEd2QyGTG1Fn5jtQMbWU
+```
+
+Install resend.
+
+```bash
+npm install resend
+```
+
+We have to add a domain to send the email from. I made up a domain but that probably will not work. So let's assume our domain is the default one `update.example.com`.
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/76aracth0o2f2fdpwtvp.png)
+
+```tsx
+// ./app/api/send-email/route.tsx
+
+import WelcomeTemplate from '@/emails/WelcomeTemplate'
+import {NextResponse} from 'next/server'
+import {Resend} from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+export async function POST() {
+  await resend.emails.send({
+    from: 'update.example.com',
+    to: 'muratkerem@gmail.com',
+    subject: 'any subject',
+    react: <WelcomeTemplate name="Murat Ozcan" />,
+  })
+
+  return NextResponse.json({})
+}
+
+```
 
 
 
