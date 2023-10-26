@@ -2471,6 +2471,72 @@ Now we have to add some models for the prisma-adapter to our `schema.prisma`.
 
 
 
+## Sending emails
+
+### Setting up [React.email](https://react.email/)
+
+```bash
+npm install react-email @react-email/components
+```
+
+Add a script in `package.json` to preview the email:
+
+```json
+"preview:email": "email dev -p 3030"
+```
+
+### Creating an email template
+
+`react-email` has a few handy components we can use to create an email template.
+
+```tsx
+// ./emails/WelcomeTemplate.tsx
+
+import {
+  Html,
+  Body,
+  Container,
+  Text,
+  Link,
+  Preview,
+} from '@react-email/components'
+
+export default function WelcomeTemplate({name}: {name: string}) {
+  return (
+    <Html>
+      <Preview>Welcome aboard!</Preview>
+      <Body>
+        <Container>
+          <Text>Hello {name}</Text>
+          <Link href="https://react-email.js.org">React Email</Link>
+        </Container>
+      </Body>
+    </Html>
+  )
+}
+```
+
+### Preview emails
+
+The email preview utility of `react-email` creates a whole new app, and it is for local use only, so gitignore it.
+```.gitignore
+.react-email/
+```
+
+It also needs a bunch of libs to make it work, which Mosh doesn't mention (for him it just works without these, but I had to peel the onion one layer at a time to make it work).
+
+```bash
+npm install -D classnames prism-react-renderer radix-ui framer-motion
+```
+
+Generate the utility app to preview the email.
+
+```bash
+npm run preview:email
+```
+
+### Styling emails
+
 
 
 
