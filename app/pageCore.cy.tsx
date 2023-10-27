@@ -23,4 +23,10 @@ describe('<Home />', () => {
     cy.mount(<HomeCoreComponent session={null} />)
     cy.get('h1').should('have.text', 'Hello ')
   })
+
+  it('should show heavy component after a few seconds', () => {
+    cy.mount(<HomeCoreComponent session={null} />)
+    cy.contains('button', 'Show heavy component').click()
+    cy.contains('My Heavy Component')
+  })
 })
