@@ -87,7 +87,7 @@ jobs:
           start: npm run dev
           wait-on: 'http://localhost:3000'
           browser: chrome
-          config-file: local.config.ts
+          config-file: cypress/config/local.config.ts
           # if you want to enable parallelization
           # record: true
           # parallel: true
@@ -97,21 +97,6 @@ jobs:
           # if you want to enable parallelization
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # # if you want to enable codecov
-      # - name: Upload artifacts (Coverage_step3)
-      #   uses: actions/upload-artifact@v3.1.2
-      #   with:
-      #     name: coverage-cy-e2e
-      #     path: coverage-cy/
-      #     retention-days: 1
-
-      # - name: ✅ Upload e2e coverage to Codecov
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     directory: coverage-cy/
-      #     flags: cypress-e2e-coverage
-      #     token: ${{ secrets.CODECOV_TOKEN }}
 
   cypress-ct-test:
     # if you want to enable parallelization
@@ -140,7 +125,7 @@ jobs:
         with:
           component: true
           browser: chrome
-          config-file: local.config.ts
+          config-file: cypress/config/local.config.ts
           # if you want to enable parallelization
           # record: true
           # parallel: true
@@ -150,18 +135,3 @@ jobs:
           # if you want to enable parallelization
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # # if you want to enable codecov
-      # - name: Upload artifacts (Coverage_step3)
-      #   uses: actions/upload-artifact@v3.1.2
-      #   with:
-      #     name: coverage-cy-ct
-      #     path: coverage-cy/
-      #     retention-days: 1
-
-      # - name: ✅ Upload CT coverage to Codecov
-      #   uses: codecov/codecov-action@v3
-      #   with:
-      #     directory: coverage-cy/
-      #     flags: cypress-ct-coverage
-      #     token: ${{ secrets.CODECOV_TOKEN }}
