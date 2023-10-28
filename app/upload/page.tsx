@@ -1,6 +1,6 @@
 'use client'
+import {CldImage, CldUploadWidget} from 'next-cloudinary'
 import {useState} from 'react'
-import {CldUploadWidget, CldImage} from 'next-cloudinary'
 
 export default function UploadPage() {
   const [publicId, setPublicId] = useState('')
@@ -16,7 +16,7 @@ export default function UploadPage() {
           sources: ['local'],
           multiple: false,
         }}
-        onUpload={(result, widget) => {
+        onUpload={result => {
           if (result.event !== 'success') return
           // @ts-expect-error why they don't have types?
           setPublicId(result.info.public_id)
