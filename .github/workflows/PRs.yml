@@ -87,6 +87,7 @@ jobs:
           start: npm run dev
           wait-on: 'http://localhost:3000'
           browser: chrome
+          config-file: local.config.ts
           # if you want to enable parallelization
           # record: true
           # parallel: true
@@ -139,6 +140,7 @@ jobs:
         with:
           component: true
           browser: chrome
+          config-file: local.config.ts
           # if you want to enable parallelization
           # record: true
           # parallel: true

@@ -1,9 +1,8 @@
-import {defineConfig} from 'cypress'
 // import plugins from './cypress/support/plugins'
-import tasks from './cypress/support/tasks'
+import tasks from '../support/tasks'
 require('dotenv').config()
 
-export default defineConfig({
+export const baseConfig: Partial<Cypress.PluginConfigOptions> = {
   // @ts-expect-error yes
   experimentalSingleTabRunMode: true,
   chromeWebSecurity: false,
@@ -33,4 +32,4 @@ export default defineConfig({
       bundler: 'webpack',
     },
   },
-})
+}

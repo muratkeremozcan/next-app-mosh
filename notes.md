@@ -2968,3 +2968,9 @@ Make `npm run build` work. Good luck.
 Sign in to Vercel, give permissions to your GitHub repo. Add the env vars
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qt2ik247dd16kqv6lrn2.png)
+
+I got a Prisma related build error and had to do this:
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/sa7oz51ux44400uf0z5o.png)
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/4ytx55ly1570us87644h.png)
