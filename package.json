@@ -10,11 +10,13 @@
     "typecheck": "tsc --noEmit",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "cy:open-e2e": "cypress open --e2e --browser chrome",
-    "cy:run-e2e": "cypress run --e2e --browser chrome",
-    "cy:open-ct": "cypress open --component --browser chrome",
-    "cy:run-ct": "cypress run --component --browser chrome",
-    "cy:run-ct-fast": "CYPRESS_NO_COMMAND_LOG=1 yarn cy:run-ct --config video=false screenshot=false",
+    "cy:open-local": "cypress open --e2e --browser chrome --config-file cypress/config/local.config.ts",
+    "cy:run-local": "cypress run --e2e --browser chrome --config-file cypress/config/local.config.ts",
+    "cy:open-dev": "cypress open --e2e --browser chrome --config-file cypress/config/dev.config.ts",
+    "cy:run-dev": "cypress run --e2e --browser chrome --config-file cypress/config/dev.config.ts",
+    "cy:open-ct": "cypress open --component --browser chrome --config-file cypress/config/local.config.ts",
+    "cy:run-ct": "cypress run --component --browser chrome --config-file cypress/config/local.config.ts",
+    "cy:run-ct-fast": "CYPRESS_NO_COMMAND_LOG=1 yarn cy:run-ct --config video=false screenshot=false --config-file cypress/config/local.config.ts",
     "preview:email": "email dev -p 3030"
   },
   "dependencies": {
