@@ -2961,3 +2961,10 @@ export default function HomePageCore({session}: HomePageCoreProps) {
 }
 ```
 
+## Deployment
+
+Make `npm run build` work. Good luck.
+
+Sign in to Vercel, give permissions to your GitHub repo. Add the env vars
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qt2ik247dd16kqv6lrn2.png)
