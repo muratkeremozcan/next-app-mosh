@@ -49,10 +49,8 @@ jobs:
       - name: Cypress e2e tests 🧪
         uses: cypress-io/github-action@v6.4.0
         with:
-          start: npm run dev
-          wait-on: 'http://localhost:3000'
           browser: chrome
-          config-file: local.dev.ts
+          config-file: dev.config.ts
           # if you want to enable parallelization
           # record: true
           # parallel: true
