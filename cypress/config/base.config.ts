@@ -1,6 +1,7 @@
 // import plugins from './cypress/support/plugins'
 import tasks from '../support/tasks'
-require('dotenv').config()
+import path from 'path'
+require('dotenv').config({path: path.resolve(__dirname, '../../.env')})
 
 export const baseConfig: Partial<Cypress.PluginConfigOptions> = {
   // @ts-expect-error yes
