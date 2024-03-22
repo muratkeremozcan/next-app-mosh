@@ -1,5 +1,4 @@
-// TODO: make styles work
-// import '../../app/globals.css' //
+import '../../app/globals.css'
 import './commands'
 import {mount} from 'cypress/react18'
 // import RootLayout from '../../app/layout'
